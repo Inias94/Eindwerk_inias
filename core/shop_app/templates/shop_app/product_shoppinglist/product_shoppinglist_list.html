@@ -1,0 +1,29 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            Products
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product name</th>
+                        <th>Amount</th>
+                        <th>Units</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in object_list %}
+                        <tr>
+                            <td>{{ product.product.name }}</td>
+                            <td>{{ product.quantity }}</td>
+                            <td>{{ product.unit }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

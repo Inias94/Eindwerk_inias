@@ -1,0 +1,14 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+    <body>
+    <h1>Product List</h1>
+    <ul>
+        {% for product in object_list %}
+            <li>{{ product.name }}</li>
+        {% endfor %}
+    </ul>
+    </body>
+
+
+{% endblock %}

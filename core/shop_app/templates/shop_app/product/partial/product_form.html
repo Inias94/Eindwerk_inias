@@ -1,0 +1,22 @@
+<form hx-post="{% url 'shop_app:product-add' %}"
+      hx-on="htmx:afterRequest: this.remove()"
+      hx-trigger="click from:#submit-all">
+    <!-- Titels buiten de tabel om herhaling te voorkomen -->
+    <div>
+        <table class="table">
+            <tbody>
+            <tr>
+                <td>{{ form.name }}</td>
+                <td>{{ form.is_favorite }} {{ form.is_favorite.label }}</td>
+                <td>
+                    <button class="btn btn-danger" type="button"
+                            hx-on="click: this.closest('tr').remove()">
+                        <i class="bi bi-x-circle"></i> Remove
+                    </button>
+                </td>
+            </tr>
+            <!-- Extra rijen kunnen hier dynamisch worden toegevoegd -->
+            </tbody>
+        </table>
+    </div>
+</form>

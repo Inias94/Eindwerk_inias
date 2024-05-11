@@ -1,0 +1,18 @@
+{% extends 'shop_app/base.html' %}
+
+{% block content %}
+    <div class="container">
+
+        <div id="product-form">
+            {% include 'shop_app/product/partial/product_form.html' %}
+        </div>
+        <div class="my-4">
+            <button class="btn btn-primary" type="submit"
+                    hx-get="{% url 'shop_app:product-add' %}"
+                    hx-target="#product-form"
+                    hx-swap="beforeend"><i class="bi bi-plus-circle"></i>
+            </button>
+            <button type="submit" class="btn btn-success" id="submit-all"><i class="bi bi-floppy"> Save</i></button>
+        </div>
+    </div>
+{% endblock %}

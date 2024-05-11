@@ -1,0 +1,13 @@
+<body>
+    <h1>Add Dish</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <h2>Products</h2>
+        {{ product_formset.management_form }}
+        {% for product_form in product_formset.forms %}
+            {{ product_form.as_p }}
+        {% endfor %}
+        <button type="submit">Save</button>
+    </form>
+</body>
