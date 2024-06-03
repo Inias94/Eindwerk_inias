@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>{{ form.name.label }}
+            {{ form.name }}</p>
+        <p>{{ form.abbreviation.label }}
+            {{ form.abbreviation }}</p>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+{% endblock %}

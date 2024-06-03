@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="container" style="background-color: aliceblue; ">
+        <div style="margin: 20%;">
+            <h1>MyShopList</h1>
+            <div class="row">
+                <div class="col">
+                    <a href="">Go to Products</a>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <h4>Welcome {{ user.username }}, you are logged in with
+                    email-address: {{ user.email }}</h4>
+            {% else %}
+                <h4>Welcome guest.</h4>
+            {% endif %}
+        <h2><a href="{% url 'shoppinglist' %}">Go to my shoppinglist!</a></h2>
+        </div>
+    </div>
+{% endblock %}
+
+

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Dish</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Create Dish</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Dish Form -->
+        <div class="form-group">
+            {{ form.non_field_errors }}
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.recipe.label_tag }}
+            {{ form.recipe }}
+            {{ form.recipe.errors }}
+        </div>
+        <div class="form-group form-check">
+            {{ form.is_favorite.label_tag }}
+            {{ form.is_favorite }}
+            {{ form.is_favorite.errors }}
+        </div>
+
+        <!-- Product Formset -->
+        <h3>Products</h3>
+        <div id="product-formset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        {{ form.product_name.label_tag }}
+                        {{ form.product_name }}
+                        {{ form.product_name.errors }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.product_is_favorite.label_tag }}
+                        {{ form.product_is_favorite }}
+                        {{ form.product_is_favorite.errors }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.quantity.label_tag }}
+                        {{ form.quantity }}
+                        {{ form.quantity.errors }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.unit.label_tag }}
+                        {{ form.unit }}
+                        {{ form.unit.errors }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Dish</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

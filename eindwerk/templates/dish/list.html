@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dish List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Dish List</h2>
+    <div class="list-group">
+        {% for dish, ingredients in dishes_with_ingredients %}
+            <div class="list-group-item">
+                <h3>{{ dish.name }}</h3>
+                <p><strong>Recipe:</strong> {{ dish.recipe }}</p>
+                <p><strong>Favorite:</strong> {{ dish.is_favorite }}</p>
+                <h4>Ingredients:</h4>
+                <ul>
+                    {% for ingredient in ingredients %}
+                        <li>{{ ingredient.product.name }} - {{ ingredient.quantity }} {{ ingredient.unit.abbreviation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

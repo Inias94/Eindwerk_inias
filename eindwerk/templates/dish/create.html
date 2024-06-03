@@ -1,0 +1,43 @@
+<!-- create_dish.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Dish</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Create Dish</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ dish_form.as_p }}
+        {{ formset.management_form }}
+        <div id="formset-container">
+            {% for form in formset %}
+                <div class="formset-form">
+                    {{ form.as_p }}
+                    <button type="button" class="remove-form-btn">Remove</button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-form-btn">Add Product</button>
+        <button type="submit">Create Dish</button>
+    </form>
+    <script>
+        $(document).ready(function() {
+            var formCount = {{ formset.total_form_count }};
+            var emptyForm = '{{ formset.empty_form.as_p|escapejs }}';
+
+            $('#add-form-btn').click(function() {
+                var newForm = $(emptyForm.replace(/__prefix__/g, formCount));
+                newForm.append('<button type="button" class="remove-form-btn">Remove</button>');
+                $('#formset-container').append(newForm);
+                formCount++;
+            });
+
+            $('#formset-container').on('click', '.remove-form-btn', function() {
+                $(this).parent().remove();
+            });
+        });
+    </script>
+</body>
+</html>
