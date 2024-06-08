@@ -1,9 +1,7 @@
 # Imports from django
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
@@ -23,40 +21,8 @@ from .models import (
     UserProduct
 )
 
+
 # TODO:: Alle templates hun styling moet nog gebeuren.
-
-
-def add_productform_to_create_dish(request):
-    """This function is used to render partials in the create_dish view using the HTMX package."""
-
-    form = ProductDishForm()
-    form_html = render_to_string("dish/partials/product_dish_form.html", {"form": form})
-    return HttpResponse(form_html)
-
-
-
-@login_required
-def create_dish(request):
-    """This function creates a new dish. A product can be created if it does not exist yet.
-    We are using a formset here so we can add multiple products to the dish. This makes it possible to use multiple forms.
-    """
-
-    if request.method == "POST":
-        dish_form = DishForm(request.POST)
-        formset = ProductDishFormSet(request.POST)
-        if dish_form.is_valid() and formset.is_valid():
-            dish = dish_form.save()
-            formset.instance = dish
-            formset.save()
-            UserDish.objects.create(user=request.user, dish=dish)
-            return redirect(reverse_lazy("dish_list"))
-    else:
-        dish_form = DishForm()
-        formset = ProductDishFormSet()
-    return render(
-        request, "dish/create.html", {"dish_form": dish_form, "formset": formset}
-    )
-
 class DishCreateView(LoginRequiredMixin, CreateView):
     model = Dish
     form_class = DishForm
@@ -78,6 +44,8 @@ class DishCreateView(LoginRequiredMixin, CreateView):
             self.object = form.save()
             print(self.object)
             formset.instance = self.object
+            for forms in formset:
+                print("THIS ARE THE FORMS:::>>>" + str(forms))
             print(formset)
             formset.save()
             UserDish.objects.create(user=self.request.user, dish=self.object)
