@@ -1,43 +1,43 @@
-<!-- create_dish.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Dish</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <h1>Create Dish</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ dish_form.as_p }}
-        {{ formset.management_form }}
-        <div id="formset-container">
-            {% for form in formset %}
-                <div class="formset-form">
-                    {{ form.as_p }}
-                    <button type="button" class="remove-form-btn">Remove</button>
-                </div>
-            {% endfor %}
-        </div>
-        <button type="button" id="add-form-btn">Add Product</button>
-        <button type="submit">Create Dish</button>
-    </form>
-    <script>
-        $(document).ready(function() {
-            var formCount = {{ formset.total_form_count }};
-            var emptyForm = '{{ formset.empty_form.as_p|escapejs }}';
+{% extends "base.html" %}
 
-            $('#add-form-btn').click(function() {
-                var newForm = $(emptyForm.replace(/__prefix__/g, formCount));
-                newForm.append('<button type="button" class="remove-form-btn">Remove</button>');
-                $('#formset-container').append(newForm);
-                formCount++;
-            });
+{% block content %}
+  <h2>Create a New Dish</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+      {{ form.non_field_errors }}
+      <div>
+        <label for="{{ dish_form.name.id_for_label }}">Dish Name:</label>
+        {{ form.name }}
+      </div>
+      <div>
+        <label for="{{ dish_form.recipe.id_for_label }}">Recipe:</label>
+        {{ form.recipe }}
+      </div>
+      <!-- Add more fields from DishForm here if needed -->
+    </div>
+    <h3>Products</h3>
+    {{ formset.management_form }}
+    <table id="product-table">
+      {% for form in formset %}
+        <tr class="formset-form">
+          <td>{{ form.as_p }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <button type="button" id="add-more">Add another product</button>
+    <br>
+    <button type="submit">Save</button>
+  </form>
 
-            $('#formset-container').on('click', '.remove-form-btn', function() {
-                $(this).parent().remove();
-            });
-        });
-    </script>
-</body>
-</html>
+  <script>
+    document.getElementById('add-more').addEventListener('click', function() {
+      var formIdx = document.querySelectorAll('.formset-form').length;
+      var newForm = document.querySelector('.formset-form').cloneNode(true);
+      var regex = new RegExp('form-' + (formIdx - 1), 'g');
+      newForm.innerHTML = newForm.innerHTML.replace(regex, 'form-' + formIdx);
+      document.querySelector('table').appendChild(newForm);
+      document.querySelector('#id_form-TOTAL_FORMS').value = formIdx + 1;
+    });
+  </script>
+{% endblock %}

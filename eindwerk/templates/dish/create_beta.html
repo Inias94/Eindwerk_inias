@@ -62,6 +62,23 @@
         <button type="submit" class="btn btn-primary">Save Dish</button>
     </form>
 </div>
+<script>
+  document.getElementById('add-more').addEventListener('click', function() {
+    var formIdx = document.querySelectorAll('.formset-form').length;
+    var newForm = document.querySelector('.formset-form').cloneNode(true);
+    var regex = new RegExp('form-' + (formIdx - 1), 'g');
+    newForm.innerHTML = newForm.innerHTML.replace(regex, 'form-' + formIdx);
+    document.querySelector('table').appendChild(newForm);
+    // Update management form
+    document.querySelector('#id_form-TOTAL_FORMS').value = formIdx + 1;
+    document.querySelector('#id_form-INITIAL_FORMS').value = formIdx;
+    // Increase the value of extra parameter
+    document.querySelector('#id_form-' + formIdx + '-id').value = '';
+  });
+</script>
+
+
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -34,6 +34,7 @@ def add_productform_to_create_dish(request):
     return HttpResponse(form_html)
 
 
+
 @login_required
 def create_dish(request):
     """This function creates a new dish. A product can be created if it does not exist yet.
@@ -56,45 +57,37 @@ def create_dish(request):
         request, "dish/create.html", {"dish_form": dish_form, "formset": formset}
     )
 
-# class DishCreateView(LoginRequiredMixin, CreateView):
-#     model = Dish
-#     form_class = DishForm
-#     template_name = 'dish/create.html'
-#     success_url = reverse_lazy('your_success_url_name')
+class DishCreateView(LoginRequiredMixin, CreateView):
+    model = Dish
+    form_class = DishForm
+    template_name = 'dish/create.html'
+    success_url = reverse_lazy('your_success_url_name')
 
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         if self.request == 'POST':
-#             data['productdish_formset'] = ProductDishFormSet(self.request.POST)
-#         else:
-#             data['productdish_formset'] = ProductDishFormSet()
-#         return data
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.method == "POST":
+            data['formset'] = ProductDishFormSet(self.request.POST)
+        else:
+            data['formset'] = ProductDishFormSet()
+        return data
 
-#     def form_valid(self, form):
-#         data = self.get_context_data()
-#         productdish_formset = data['productdish_formset']
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            self.object = form.save()
+            print(self.object)
+            formset.instance = self.object
+            print(formset)
+            formset.save()
+            UserDish.objects.create(user=self.request.user, dish=self.object)
+            return redirect(reverse_lazy("dish_list"))
+        else:
+            return self.form_invalid(form)
 
-#         if form.is_valid() and productdish_formset.is_valid():
-#             self.object = form.save()
-
-#             # Save each product form in the formset
-#             for productdish_form in productdish_formset:
-#                 if productdish_form.has_changed() and productdish_form.is_valid():
-#                     productdish = productdish_form.save(commit=False)
-#                     productdish.dish = self.object
-#                     productdish.save()
-
-#             # Create UserDish entry
-#             UserDish.objects.create(user=self.request.user, dish=self.object)
-
-#             # Create UserProduct entries
-#             for productdish_form in productdish_formset:
-#                 if productdish_form.instance.pk:
-#                     UserProduct.objects.get_or_create(user=self.request.user, product=productdish_form.instance.product)
-
-#             return redirect(reverse_lazy('dish_list'))
-
-#         return self.render_to_response(self.get_context_data(form=form))
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
 
 
 class IndexView(TemplateView):
