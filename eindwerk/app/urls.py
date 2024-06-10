@@ -20,6 +20,11 @@ urlpatterns = [
     path('dish/', views.DishListView.as_view(), name='dish_list'),
     path('dish/create/', views.DishCreateView.as_view(), name='dish_create'),
     path('dish/<int:pk>/', views.DishDetailView.as_view(), name='dish_detail'),
+    path('dish/<int:pk>/update/', views.DishUpdateView.as_view(), name='dish_update'),
+
+    # ProductDish
+    path('product_dish/<int:pk>/update/', views.ProductDishUpdateView.as_view(), name='product_dish_update'),
+    path('product_dish/<int:pk>/delete/', views.ProductDishDeleteView.as_view(), name='product_dish_delete'),
 
     # Shoppinglist
     path('shoppinglist', views.ShoppingListListView.as_view(), name='shoppinglist'),
