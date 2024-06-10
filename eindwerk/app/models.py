@@ -56,6 +56,9 @@ class Dish(models.Model):
     def __str__(self) -> str:
         return f'{self.name}'
 
+    class Meta:
+        ordering = ['name']
+
 
 class ProductDish(models.Model):
     """This model represents the relation betweeen the product and a dish.

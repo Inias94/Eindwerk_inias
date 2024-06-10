@@ -1,35 +1,67 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-    <h2>Dishes by: {{ user.username }}</h2>
-        <div class="accordion" id="accordionExample">
-            {% for dish, products in dish_products.items %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true"
-                                aria-controls="collapse{{ forloop.counter }}">
-                            {{ dish.name }}
-                        </button>
-                    </h2>
-                    <div id="collapse{{ forloop.counter }}"
-                         class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
-                         aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <h4>Recipe</h4>
-                            <p>{{ dish.recipe }}</p>
-                            <h3>Products:</h3>
-                            <ul>
-                                {% for product_dish in products %}
-                                    <li>{{ product_dish.product.name }}: {{ product_dish.quantity }} {{ product_dish.unit.abbreviation }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+<div class="container">
+    <h2>Gerechten van: {{ user.username }}</h2>
+    <label for="searchInput">Zoek je iets specifiek?</label><input type="text" id="searchInput" class="form-control mb-3" placeholder="Zoeken...">
+    <div class="accordion" id="accordionExample">
+        {% for dish, products in dish_products.items %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true"
+                    aria-controls="collapse{{ forloop.counter }}">
+                    {{ dish.name }}
+                </button>
+            </h2>
+            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <div class="card my-3">
+                        <h5 class="card-title mx-3 mt-2">Recept</h5>
+                        <p class="card-text mx-3 my-2">{{ dish.recipe }}</p>
                     </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Hoeveelheid</th>
+                                <th>Eenheid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product_dish in products %}
+                            <tr>
+                                <td>{{ product_dish.product.name }}</td>
+                                <td>{{ product_dish.quantity }}</td>
+                                <td>{{ product_dish.unit.abbreviation }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p><a href="{% url 'dish-detail' %}"></a></p>
                 </div>
-            {% endfor %}
+            </div>
         </div>
+        {% endfor %}
     </div>
+</div>
 
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+        var input, filter, accordion, panel, i, txtValue;
+        input = document.getElementById('searchInput');
+        filter = input.value.toUpperCase();
+        accordion = document.getElementById('accordionExample');
+        panel = accordion.getElementsByClassName('accordion-item');
+        for (i = 0; i < panel.length; i++) {
+            txtValue = panel[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                panel[i].style.display = '';
+            } else {
+                panel[i].style.display = 'none';
+            }
+        }
+    });
+</script>
 {% endblock %}

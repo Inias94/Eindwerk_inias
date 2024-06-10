@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView, DetailView
 
 # Project imports
 from eindwerk.settings import LOGIN_URL
@@ -95,6 +95,12 @@ class DishListView(LoginRequiredMixin, ListView):
         context['dish_products'] = dish_products
         context['user'] = user
         return context
+
+
+class DishDetailView(LoginRequiredMixin, DetailView):
+
+    login_url = LOGIN_URL
+    model = Dish
 
 
 class DishCreateView(LoginRequiredMixin, CreateView):

@@ -19,6 +19,7 @@ urlpatterns = [
     # Dish
     path('dish/', views.DishListView.as_view(), name='dish_list'),
     path('dish/create/', views.DishCreateView.as_view(), name='dish_create'),
+    path('dish/<int:pk>/', views.DishDetailView.as_view(), name='dish_detail'),
 
     # Shoppinglist
     path('shoppinglist', views.ShoppingListListView.as_view(), name='shoppinglist'),
