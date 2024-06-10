@@ -76,14 +76,25 @@ class ProductListView(LoginRequiredMixin, ListView):
 
 
 class DishListView(LoginRequiredMixin, ListView):
-    """This view will show you a list of all the users dishes."""
+    """This view will show you a list of all the users dishes. Including the recipe and the products in it."""
 
     login_url = LOGIN_URL
     model = Dish
     template_name = "dish/list.html"
 
-    def get_queryset(self):
-        return Dish.objects.filter(userdish__user=self.request.user)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        user = self.request.user
+        dishes = Dish.objects.filter(userdish__user=user)
+        context = super().get_context_data(object_list=object_list, **kwargs)
+
+        dish_products = {}
+        for dish in dishes:
+            products = ProductDish.objects.filter(dish=dish).select_related('product', 'unit')
+            dish_products[dish] = products
+
+        context['dish_products'] = dish_products
+        context['user'] = user
+        return context
 
 
 class DishCreateView(LoginRequiredMixin, CreateView):
