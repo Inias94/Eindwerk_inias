@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ShoppingList, Product, ProductDish, Dish, Unit
+from .models import ShoppingList, Product, ProductDish, Dish, Unit, User
 
 
 class ProductForm(forms.ModelForm):
@@ -44,14 +44,6 @@ class ProductDishForm(forms.ModelForm):
                 'placeholder': 'Unit',
             })
         }
-    
-    def save(self, commit=True):
-        product_name = self.cleaned_data.get('product_name')
-        product_is_favorite = self.cleaned_data.get('product_is_favorite')
-        product, created = Product.objects.get_or_create(name=product_name, defaults={'is_favorite': product_is_favorite})
-        self.instance.product = product
-        return super().save(commit)
-
 
 
 class DishForm(forms.ModelForm):

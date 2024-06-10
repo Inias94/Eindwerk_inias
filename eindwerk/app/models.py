@@ -37,7 +37,7 @@ class UserDish(models.Model):
 
 class Product(models.Model):
     """This model represents a product. This can be seen as product or as an ingredient.
-    It has a name and a boolean field to filter on for favorites."""
+    It has a name and a boolean field to filter for favorites."""
 
     name = models.CharField(max_length=50, unique=True)
     is_favorite = models.BooleanField(default=False, blank=True)

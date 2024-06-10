@@ -1,6 +1,6 @@
 # Imports from django
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
@@ -10,52 +10,10 @@ from eindwerk.settings import LOGIN_URL
 
 from .forms import DishForm, ProductDishForm, ProductForm, ShoppingListForm, UnitForm
 from .formsets import ProductDishFormSet
-from .models import (
-    Dish,
-    Product,
-    ProductDish,
-    ProductShoppingList,
-    ShoppingList,
-    Unit,
-    UserDish,
-    UserProduct
-)
+from .models import Dish, Product, ProductDish, ProductShoppingList, ShoppingList, Unit, UserDish, UserProduct
 
 
 # TODO:: Alle templates hun styling moet nog gebeuren.
-class DishCreateView(LoginRequiredMixin, CreateView):
-    model = Dish
-    form_class = DishForm
-    template_name = 'dish/create.html'
-    success_url = reverse_lazy('your_success_url_name')
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.method == "POST":
-            data['formset'] = ProductDishFormSet(self.request.POST)
-        else:
-            data['formset'] = ProductDishFormSet()
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
-        if formset.is_valid():
-            self.object = form.save()
-            print(self.object)
-            formset.instance = self.object
-            for forms in formset:
-                print("THIS ARE THE FORMS:::>>>" + str(forms))
-            print(formset)
-            formset.save()
-            UserDish.objects.create(user=self.request.user, dish=self.object)
-            return redirect(reverse_lazy("dish_list"))
-        else:
-            return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        context = self.get_context_data(form=form)
-        return self.render_to_response(context)
 
 
 class IndexView(TemplateView):
@@ -112,9 +70,74 @@ class ProductListView(LoginRequiredMixin, ListView):
 
 
 class DishListView(LoginRequiredMixin, ListView):
+    """This view will show you a list of all the users dishes."""
+
     login_url = LOGIN_URL
     model = Dish
     template_name = "dish/list.html"
+
+
+class DishCreateView(LoginRequiredMixin, CreateView):
+    """This view creates a new dish object. A Dish containing multiple products.
+
+    Relations established in this CreateView:
+        - User with Product: UserProduct model.
+        - User with Dish: UserDish model.
+        - Product with Dish: ProductDish model.
+
+    Forms used:
+        - DishForm: For creating a new Dish object(form inherits from modelForm).
+        - ProductDishFormset: For creating multiple products in the Dish creation.
+    """
+
+    login_url = LOGIN_URL
+    model = Dish
+    form_class = DishForm
+    template_name = 'dish/create.html'
+    success_url = reverse_lazy('dish_list')
+
+    def get_context_data(self, **kwargs):
+        # Need to get extra context from the View, except from the DishForm.
+        data = super().get_context_data(**kwargs)
+        if self.request.method == "POST":
+            data['formset'] = ProductDishFormSet(self.request.POST)
+        else:
+            data['formset'] = ProductDishFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+
+        if formset.is_valid():
+            # Object is the dish here.
+            self.object = form.save()
+            # print(formset)
+
+            for formset_form in formset:
+                # print(formset_form)
+                # Take the product(name, is_favorite) out of the formset (added in the ProductDishForm)
+                product_name = formset_form.cleaned_data.get('product_name')
+                product_is_favorite = formset_form.cleaned_data.get('product_is_favorite')
+
+                product, created = Product.objects.get_or_create(
+                    name=product_name,
+                    defaults={'is_favorite': product_is_favorite}
+                )
+
+                # Set the product for each ProductDish instance and save
+                # formsets have instances, the amount is specified in the extra parameter in the creation of the formset.
+                formset_form.instance.product = product
+                formset_form.instance.dish = self.object
+                formset_form.save()
+                UserProduct.objects.get_or_create(user=self.request.user, product=product)
+
+            # Create the UserDish instance
+            UserDish.objects.create(user=self.request.user, dish=self.object)
+
+            return redirect(reverse_lazy("dish_list"))
+        else:
+            raise ValidationError(formset.errors)
 
 
 class UnitCreateView(LoginRequiredMixin, CreateView):
@@ -128,6 +151,8 @@ class UnitCreateView(LoginRequiredMixin, CreateView):
 
 
 class UnitListView(LoginRequiredMixin, ListView):
+    """This view will show a list of ALL units."""
+
     login_url = LOGIN_URL
     model = Unit
     template_name = "unit/list.html"
