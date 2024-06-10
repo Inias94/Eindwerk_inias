@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col mt-3">
+                <h4>{{ dish.name }}</h4>
+            </div>
+            <div class="col">
+                <a href="#" class="btn btn-success"><h4 class="bi bi-cart-plus text-center"></h4></a>
+            </div>
+        </div>
+        <div class="card my-3 px-3 pt-3">
+            <h5 class="card-title">Recept</h5>
+            <p class="card-text">{{ dish.recipe }}</p>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Hoeveelheid</th>
+                    <th>Eenheid</th>
+                    <th class="text-end">Acties</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for dish, products in dish_products.items %}
+                    {% for product_dish in products %}
+                        <tr>
+                            <td>{{ product_dish.product.name }}</td>
+                            <td>{{ product_dish.quantity }}</td>
+                            <td>{{ product_dish.unit.abbreviation }}</td>
+                            <td class="text-end">
+                                <a class="btn btn-danger" href=""><i class="bi bi-trash"></i></a>
+                                <a class="btn btn-warning" href=""><i class="bi bi-pencil-square"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+            <p><a href=""></a></p>
+        </div>
+    </div>
+{% endblock %}

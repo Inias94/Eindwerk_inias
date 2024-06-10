@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Verwijder Product uit Gerecht</h2>
+        <form method="post">
+            {% csrf_token %}
+            <p>Weet je zeker dat je dit product wilt verwijderen?</p>
+            <button type="submit" class="btn btn-danger">Verwijder</button>
+            <a href="{{ success_url }}" class="btn btn-secondary">Annuleer</a>
+        </form>
+    </div>
+{% endblock %}
