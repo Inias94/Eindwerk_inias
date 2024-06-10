@@ -66,12 +66,12 @@ class ProductDish(models.Model):
     A product can have a certain amount of products in a dish.
     Example: amount=4, unit=kg"""
 
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     # Foreign key
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
-    unit = models.ForeignKey("Unit", on_delete=models.DO_NOTHING)
+    unit = models.ForeignKey("Unit", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.product} in {self.dish}"
@@ -120,3 +120,6 @@ class ProductShoppingList(models.Model):
 
     def __str__(self) -> str:
         return f'{self.product}'
+
+
+# TODO: MenuLijst: Relatie tussen gerechten en winkellijst
