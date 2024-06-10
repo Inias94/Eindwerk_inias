@@ -28,7 +28,7 @@ class UserDish(models.Model):
     """This model represents the relation of a user and a dish."""
 
     # Foreign keys
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_dishes")
     dish = models.ForeignKey("Dish", on_delete=models.CASCADE)
 
     def __str__(self) -> str:

@@ -31,10 +31,16 @@ class ShoppingListCreateView(LoginRequiredMixin, CreateView):
     template_name = "shoppinglist/create.html"
     success_url = reverse_lazy("shoppinglist")
 
-    def form_valid(self, form):
-        # Links the created objected to the user.
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    # A shoppinglist will be created when visiting the endpoint.
+    def get(self, request, *args, **kwargs):
+        ShoppingList.objects.create(user=self.request.user)
+        return redirect(reverse_lazy('shoppinglist'))
+
+    # We are not using the form anymore, only the endpoint for this.
+    # def form_valid(self, form):
+    #     # Links the created objected to the user.
+    #     form.instance.user = self.request.user
+    #     return super().form_valid(form)
 
 
 class ShoppingListUpdateView(LoginRequiredMixin, UpdateView):
@@ -75,6 +81,9 @@ class DishListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
     model = Dish
     template_name = "dish/list.html"
+
+    def get_queryset(self):
+        return Dish.objects.filter(userdish__user=self.request.user)
 
 
 class DishCreateView(LoginRequiredMixin, CreateView):
@@ -120,16 +129,17 @@ class DishCreateView(LoginRequiredMixin, CreateView):
                 product_name = formset_form.cleaned_data.get('product_name')
                 product_is_favorite = formset_form.cleaned_data.get('product_is_favorite')
 
-                product, created = Product.objects.get_or_create(
-                    name=product_name,
-                    defaults={'is_favorite': product_is_favorite}
-                )
+                if product_name:
+                    product, created = Product.objects.get_or_create(
+                        name=product_name,
+                        defaults={'is_favorite': product_is_favorite}
+                    )
 
-                # Set the product for each ProductDish instance and save
-                # formsets have instances, the amount is specified in the extra parameter in the creation of the formset.
-                formset_form.instance.product = product
-                formset_form.instance.dish = self.object
-                formset_form.save()
+                    # Set the product for each ProductDish instance and save
+                    # formsets have instances, the amount is specified in the extra parameter in the creation of the formset.
+                    formset_form.instance.product = product
+                    formset_form.instance.dish = self.object
+                    formset_form.save()
                 UserProduct.objects.get_or_create(user=self.request.user, product=product)
 
             # Create the UserDish instance

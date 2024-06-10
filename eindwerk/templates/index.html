@@ -15,7 +15,11 @@
             {% else %}
                 <h4>Welcome guest.</h4>
             {% endif %}
-        <h2><a href="{% url 'shoppinglist' %}">Go to my shoppinglist!</a></h2>
+            <h2><a href="{% url 'shoppinglist' %}">Go to my shoppinglists!</a></h2>
+            <a href="{% url 'shoppinglist_create' %}">
+                <p>Create new shoppinglist</p>
+            </a>
+         
         </div>
     </div>
 {% endblock %}
