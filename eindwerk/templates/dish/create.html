@@ -63,13 +63,35 @@
     <h1>Create Product Dish</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        {{ product_form.name }}
-        {{ product_form.is_favorite }}
-        {{ product_dish_form.unit }}
-        {{ product_dish_form.quantity }}
+        <div>
+            <label for="{{ form.name.id_for_label }}">Dish Name:</label>
+            {{ form.name }}
+        </div>
+        <div>
+            <label for="{{ form.recipe.id_for_label }}">Recipe:</label>
+            {{ form.recipe }}
+        </div>
+        <div>
+            <label for="{{ form.is_favorite.id_for_label }}">Dish Favorite:</label>
+            {{ form.is_favorite }}
+        </div>
+        <div>
+            <label for="{{ product_form.name.id_for_label }}">Product Name:</label>
+            {{ product_form.name }}
+        </div>
+        <div>
+            <label for="{{ product_form.is_favorite.id_for_label }}">Product Favorite:</label>
+            {{ product_form.is_favorite }}
+        </div>
+        <div>
+            <label for="{{ product_dish_form.quantity.id_for_label }}">Quantity:</label>
+            {{ product_dish_form.quantity }}
+        </div>
+        <div>
+            <label for="{{ product_dish_form.unit.id_for_label }}">Unit:</label>
+            {{ product_dish_form.unit }}
+        </div>
         <button type="submit">Create</button>
     </form>
 </body>
 </html>
-

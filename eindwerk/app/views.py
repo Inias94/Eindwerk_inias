@@ -135,7 +135,7 @@ class DishListView(LoginRequiredMixin, ListView):
         # Get the current user.
         user = self.request.user
         # Query all dishes belonging to the current user.
-        dishes = Dish.objects.filter(userdish__user=user)
+        dishes = Dish.objects.all()
         context = super().get_context_data(object_list=object_list, **kwargs)
 
         # Create a dictionary to store dishes and their associated products.
@@ -178,31 +178,45 @@ class DishCreateView(LoginRequiredMixin, CreateView):
     form_class = DishForm
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data()
+        data = super().get_context_data(**kwargs)
         if self.request.method == "POST":
-            data['product_form'] = ProductForm(self.request.POST)
-            data['product_dish_form'] = ProductDishForm(self.request.POST)
+            data['product_form'] = ProductForm(self.request.POST, prefix='product')
+            data['product_dish_form'] = ProductDishForm(self.request.POST, prefix='product_dish')
         else:
-            data['product_form'] = ProductForm()
-            data['product_dish_form'] = ProductDishForm()
+            data['product_form'] = ProductForm(prefix='product')
+            data['product_dish_form'] = ProductDishForm(prefix='product_dish')
         return data
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        dish = self.object
         context = self.get_context_data()
         product_form = context['product_form']
         product_dish_form = context['product_dish_form']
 
         if all([form.is_valid(), product_form.is_valid(), product_dish_form.is_valid()]):
+            # Sla de dish op en verkrijg de instantie
+            dish = form.save()
+
+            # Sla het product op en verkrijg de instantie
             product = product_form.save()
 
+            # Sla de product_dish relatie op
             product_dish = product_dish_form.save(commit=False)
             product_dish.product = product
             product_dish.dish = dish
             product_dish.save()
 
-        return response
+            # Voeg de UserDish en UserProduct relaties toe
+            UserDish.objects.get_or_create(user=self.request.user, dish=dish)
+            UserProduct.objects.get_or_create(user=self.request.user, product=product)
+
+            return redirect(self.success_url)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+
+
+
 
 
 
