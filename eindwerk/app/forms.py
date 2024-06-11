@@ -27,9 +27,6 @@ class ProductForm(forms.ModelForm):
 
 class ProductDishForm(forms.ModelForm):
     """Form for linking products to a dish with a certain amount and unit."""
-    
-    product_name = forms.CharField(max_length=100, required=True, label='Product Name')
-    product_is_favorite = forms.BooleanField(required=False, label='Product is Favorite')
 
     class Meta:
         model = ProductDish

@@ -1,54 +1,75 @@
-{% extends "base.html" %}
+{#{% extends "base.html" %}#}
+{##}
+{#{% block content %}#}
+{#    <h2>Dish</h2>#}
+{#    <form id="dish-form" action="" method="post">#}
+{#        {% csrf_token %}#}
+{#        <div>{{ form.as_p }}</div>#}
+{##}
+{#        <h3>Products</h3>#}
+{#        {{ formset.management_form }}#}
+{#        {% for items in formset %}#}
+{#            <div class="formset-row">#}
+{#                <div><label>{{ items.product_name.label }}</label>{{ items.product_name }}</div>#}
+{#                <div><label>{{ items.product_is_favorite.label }}</label>{{ items.product_is_favorite }}</div>#}
+{#                <div><label>{{ items.quantity.label }}</label>{{ items.quantity }}</div>#}
+{#                <div><label>{{ items.unit.label }}</label>{{ items.unit }}</div>#}
+{#                <div><button type="button" class="delete-btn">Delete</button></div>#}
+{#            <hr/>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#        <button type="button" id="add-more">Add More</button>#}
+{#        <button type="submit">Save</button>#}
+{#    </form>#}
+{##}
+{#    <script>#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            var formsets = document.querySelectorAll('.formset-row');#}
+{#            var addMoreBtn = document.getElementById('add-more');#}
+{##}
+{#            formsets.forEach(function(formset, index) {#}
+{#                if (index !== 0) {#}
+{#                    formset.style.display = 'none';#}
+{#                }#}
+{#            });#}
+{##}
+{#            addMoreBtn.addEventListener('click', function() {#}
+{#                var hiddenFormsets = document.querySelectorAll('.formset-row[style="display: none;"]');#}
+{#                if (hiddenFormsets.length > 0) {#}
+{#                    hiddenFormsets[0].style.display = 'block';#}
+{#                }#}
+{#            });#}
+{##}
+{#            document.addEventListener('click', function(event) {#}
+{#                if (event.target.classList.contains('delete-btn')) {#}
+{#                    var row = event.target.closest('.formset-row');#}
+{#                    row.querySelectorAll('input[type="text"], input[type="checkbox"]').forEach(function(input) {#}
+{#                        input.value = '';#}
+{#                    });#}
+{#                    row.style.display = 'none';#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
 
-{% block content %}
-    <h2>Dish</h2>
-    <form id="dish-form" action="" method="post">
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Product Dish</title>
+</head>
+<body>
+    <h1>Create Product Dish</h1>
+    <form method="post">
         {% csrf_token %}
-        <div>{{ form.as_p }}</div>
-
-        <h3>Products</h3>
-        {{ formset.management_form }}
-        {% for items in formset %}
-            <div class="formset-row">
-                <div><label>{{ items.product_name.label }}</label>{{ items.product_name }}</div>
-                <div><label>{{ items.product_is_favorite.label }}</label>{{ items.product_is_favorite }}</div>
-                <div><label>{{ items.quantity.label }}</label>{{ items.quantity }}</div>
-                <div><label>{{ items.unit.label }}</label>{{ items.unit }}</div>
-                <div><button type="button" class="delete-btn">Delete</button></div>
-            <hr/>
-            </div>
-        {% endfor %}
-        <button type="button" id="add-more">Add More</button>
-        <button type="submit">Save</button>
+        {{ form.as_p }}
+        {{ product_form.name }}
+        {{ product_form.is_favorite }}
+        {{ product_dish_form.unit }}
+        {{ product_dish_form.quantity }}
+        <button type="submit">Create</button>
     </form>
+</body>
+</html>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var formsets = document.querySelectorAll('.formset-row');
-            var addMoreBtn = document.getElementById('add-more');
-
-            formsets.forEach(function(formset, index) {
-                if (index !== 0) {
-                    formset.style.display = 'none';
-                }
-            });
-
-            addMoreBtn.addEventListener('click', function() {
-                var hiddenFormsets = document.querySelectorAll('.formset-row[style="display: none;"]');
-                if (hiddenFormsets.length > 0) {
-                    hiddenFormsets[0].style.display = 'block';
-                }
-            });
-
-            document.addEventListener('click', function(event) {
-                if (event.target.classList.contains('delete-btn')) {
-                    var row = event.target.closest('.formset-row');
-                    row.querySelectorAll('input[type="text"], input[type="checkbox"]').forEach(function(input) {
-                        input.value = '';
-                    });
-                    row.style.display = 'none';
-                }
-            });
-        });
-    </script>
-{% endblock %}
