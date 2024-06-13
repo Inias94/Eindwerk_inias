@@ -27,7 +27,7 @@ class ProductForm(forms.ModelForm):
 
 class ProductDishForm(forms.ModelForm):
     """Form for linking products to a dish with a certain amount and unit."""
-    
+
     product_name = forms.CharField(max_length=100, required=True, label='Product Name')
     product_is_favorite = forms.BooleanField(required=False, label='Product is Favorite')
 
@@ -44,6 +44,16 @@ class ProductDishForm(forms.ModelForm):
                 'placeholder': 'Unit',
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ProductDishForm, self).__init__(*args, **kwargs)
+        self.fields['product_name'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Product Name'
+        })
+        self.fields['product_is_favorite'].widget.attrs.update({
+            'class': 'form-check-input'
+        })
 
 
 class DishForm(forms.ModelForm):
@@ -67,7 +77,7 @@ class DishForm(forms.ModelForm):
                 'placeholder': 'Recipe',
             }),
             'is_favorite': forms.CheckboxInput(attrs={
-                'class': 'form-control',
+                'class': 'form-check-input',
                 'placeholder': 'Favorite?',
             })
         }
