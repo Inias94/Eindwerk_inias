@@ -1,54 +1,104 @@
+{#{% extends "base.html" %}#}
+{##}
+{#{% block content %}#}
+{#    <h2>Dish</h2>#}
+{#    <form id="dish-form" action="" method="post">#}
+{#        {% csrf_token %}#}
+{#        <div>{{ form.as_p }}</div>#}
+{##}
+{#        <h3>Products</h3>#}
+{#        {{ formset.management_form }}#}
+{#        {% for items in formset %}#}
+{#            <div class="formset-row">#}
+{#                <div><label>{{ items.product_name.label }}</label>{{ items.product_name }}</div>#}
+{#                <div><label>{{ items.product_is_favorite.label }}</label>{{ items.product_is_favorite }}</div>#}
+{#                <div><label>{{ items.quantity.label }}</label>{{ items.quantity }}</div>#}
+{#                <div><label>{{ items.unit.label }}</label>{{ items.unit }}</div>#}
+{#                <div><button type="button" class="delete-btn">Delete</button></div>#}
+{#            <hr/>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#        <button type="button" id="add-more">Add More</button>#}
+{#        <button type="submit">Save</button>#}
+{#    </form>#}
+{##}
+{#    <script>#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            var formsets = document.querySelectorAll('.formset-row');#}
+{#            var addMoreBtn = document.getElementById('add-more');#}
+{##}
+{#            formsets.forEach(function(formset, index) {#}
+{#                if (index !== 0) {#}
+{#                    formset.style.display = 'none';#}
+{#                }#}
+{#            });#}
+{##}
+{#            addMoreBtn.addEventListener('click', function() {#}
+{#                var hiddenFormsets = document.querySelectorAll('.formset-row[style="display: none;"]');#}
+{#                if (hiddenFormsets.length > 0) {#}
+{#                    hiddenFormsets[0].style.display = 'block';#}
+{#                }#}
+{#            });#}
+{##}
+{#            document.addEventListener('click', function(event) {#}
+{#                if (event.target.classList.contains('delete-btn')) {#}
+{#                    var row = event.target.closest('.formset-row');#}
+{#                    row.querySelectorAll('input[type="text"], input[type="checkbox"]').forEach(function(input) {#}
+{#                        input.value = '';#}
+{#                    });#}
+{#                    row.style.display = 'none';#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Dish</h2>
-    <form id="dish-form" action="" method="post">
+    <div class="container">
+    <h2>Create Dish</h2>
+    <form method="post">
         {% csrf_token %}
-        <div>{{ form.as_p }}</div>
-
+        {{ form.as_p }}
         <h3>Products</h3>
-        {{ formset.management_form }}
-        {% for items in formset %}
-            <div class="formset-row">
-                <div><label>{{ items.product_name.label }}</label>{{ items.product_name }}</div>
-                <div><label>{{ items.product_is_favorite.label }}</label>{{ items.product_is_favorite }}</div>
-                <div><label>{{ items.quantity.label }}</label>{{ items.quantity }}</div>
-                <div><label>{{ items.unit.label }}</label>{{ items.unit }}</div>
-                <div><button type="button" class="delete-btn">Delete</button></div>
-            <hr/>
+        <div id="productdish_formset">
+            {{ productdish_formset.management_form }}
+            <div id="product-form-list">
+                {% for form in productdish_formset %}
+                    <div class="form-row product-form">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-        <button type="button" id="add-more">Add More</button>
-        <button type="submit">Save</button>
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-more">Add more</button>
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
+
+    <template id="empty-form-template">
+        <div class="form-row product-form">
+            {{ productdish_formset.empty_form.as_p }}
+        </div>
+    </template>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var formsets = document.querySelectorAll('.formset-row');
-            var addMoreBtn = document.getElementById('add-more');
+            let addMoreBtn = document.getElementById('add-more');
+            let formsetDiv = document.getElementById('product-form-list');
+            let totalForms = document.getElementById('id_productdish_set-TOTAL_FORMS');
+            let emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
+            let formNum = parseInt(totalForms.value);
 
-            formsets.forEach(function(formset, index) {
-                if (index !== 0) {
-                    formset.style.display = 'none';
-                }
-            });
-
-            addMoreBtn.addEventListener('click', function() {
-                var hiddenFormsets = document.querySelectorAll('.formset-row[style="display: none;"]');
-                if (hiddenFormsets.length > 0) {
-                    hiddenFormsets[0].style.display = 'block';
-                }
-            });
-
-            document.addEventListener('click', function(event) {
-                if (event.target.classList.contains('delete-btn')) {
-                    var row = event.target.closest('.formset-row');
-                    row.querySelectorAll('input[type="text"], input[type="checkbox"]').forEach(function(input) {
-                        input.value = '';
-                    });
-                    row.style.display = 'none';
-                }
+            addMoreBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                let newForm = emptyFormTemplate.replace(/__prefix__/g, formNum);
+                formsetDiv.insertAdjacentHTML('beforeend', newForm);
+                formNum++;
+                totalForms.value = formNum;
             });
         });
     </script>
+</div>
 {% endblock %}
+
+
