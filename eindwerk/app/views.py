@@ -1,6 +1,7 @@
 # Imports from django
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView, DetailView, detail, DeleteView
@@ -151,6 +152,9 @@ class DishListView(LoginRequiredMixin, ListView):
 
 
 class DishDetailView(LoginRequiredMixin, DetailView):
+    """This view makes it possible to look to a dish in detail.
+    It will only show dishes that are related to the user."""
+
     login_url = LOGIN_URL
     model = Dish
     template_name = 'dish/detail.html'
@@ -159,27 +163,49 @@ class DishDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data()
         # Get the current user.
         user = self.request.user
-        # Query all dishes belonging t
-        dishes = Dish.objects.filter(userdish__user=user)
+        # Query the dish for the user
+        dishes = Dish.objects.filter(pk=self.kwargs['pk'])
 
-        dish_products = {
-            dish: ProductDish.objects.filter(dish=dish).select_related('product', 'unit') for dish in dishes
-        }
+        dish_products = {}
+        for dish in dishes:
+            dish_products[dish] = ProductDish.objects.filter(dish=dish).select_related('product', 'unit')
         print(dish_products)
         context['dish_products'] = dish_products
         # print("Dish Products:", dish_products)
         return context
 
+    def get_object(self, queryset=None):
+        # Get the current user.
+        user = self.request.user
+        # Get the dish object.
+        obj = super().get_object(queryset=queryset)
+        # Check if the dish belongs to the current user.
+        if not Dish.objects.filter(id=obj.id, userdish__user=user).exists():
+            raise PermissionDenied
+        return obj
 
-class DishCreateView(CreateView):
+
+class DishCreateView(LoginRequiredMixin, CreateView):
+    """This view creates a new dish object. A Dish containing multiple products.
+
+    Relations established in this CreateView:
+        - User with Product: UserProduct model.
+        - User with Dish: UserDish model.
+        - Product with Dish: ProductDish model.
+
+    Forms used:
+        - DishForm: For creating a new Dish object(form inherits from modelForm).
+        - ProductDishFormset: For creating multiple products in the Dish creation.
+    """
+
     model = Dish
     form_class = DishForm
     template_name = 'dish/create.html'
-    success_url = reverse_lazy('dish_list')  # Update with your actual success URL
+    success_url = reverse_lazy('dish_list')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        if self.request.POST:
+        if self.request == "POST":
             data['productdish_formset'] = ProductDishFormSet(self.request.POST)
         else:
             data['productdish_formset'] = ProductDishFormSet()
@@ -195,12 +221,14 @@ class DishCreateView(CreateView):
             # Save the Dish first
             dish = form.save()
 
-            # Iterate over the product dish formset and save each ProductDish object
+            # Iterate over the productdish_formset and save each ProductDish object
             for productdish_form in productdish_formset:
+
+                # These fields are manually added to the ProductDishForm, therefor we have to extract the data out of the form fields.
                 product_name = productdish_form.cleaned_data.get('product_name')
                 product_is_favorite = productdish_form.cleaned_data.get('product_is_favorite')
 
-                # Create or get the Product
+                # Create or get the Product with the data from above.
                 product, created = Product.objects.get_or_create(
                     name=product_name,
                     defaults={'is_favorite': product_is_favorite}
@@ -213,157 +241,88 @@ class DishCreateView(CreateView):
                     quantity=productdish_form.cleaned_data.get('quantity'),
                     unit=productdish_form.cleaned_data.get('unit')
                 )
+                # Create the UserProduct object
                 UserProduct.objects.create(user=user, product=product)
-                UserDish.objects.create(user=user, dish=dish)
+            # Create the UserDish object for establishing the relation between the user and the dish.
+            UserDish.objects.create(user=user, dish=dish)
 
             return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
 
-
-# class DishCreateView(LoginRequiredMixin, CreateView):
-#     """This view creates a new dish object. A Dish containing multiple products.
-#
-#     Relations established in this CreateView:
-#         - User with Product: UserProduct model.
-#         - User with Dish: UserDish model.
-#         - Product with Dish: ProductDish model.
-#
-#     Forms used:
-#         - DishForm: For creating a new Dish object(form inherits from modelForm).
-#         - ProductDishFormset: For creating multiple products in the Dish creation.
-#     """
-#
-#     login_url = LOGIN_URL
-#     model = Dish
-#     form_class = DishForm
-#     template_name = 'dish/create.html'
-#     success_url = reverse_lazy('dish_list')
-#
-#     def get_context_data(self, **kwargs):
-#         # Need to get extra context from the View, except from the DishForm.
-#         data = super().get_context_data(**kwargs)
-#         if self.request.method == "POST":
-#             data['formset'] = ProductDishFormSet(self.request.POST)
-#         else:
-#             data['formset'] = ProductDishFormSet()
-#         return data
-#
-#     def form_valid(self, form):
-#         context = self.get_context_data()
-#         formset = context['formset']
-#
-#         if formset.is_valid():
-#             # Object is the dish here.
-#             self.object = form.save()
-#             # print(formset)
-#
-#             for formset_form in formset:
-#                 # print(formset_form)
-#                 # Take the product(name, is_favorite) out of the formset (added in the ProductDishForm)
-#                 product_name = formset_form.cleaned_data.get('product_name')
-#                 product_is_favorite = formset_form.cleaned_data.get('product_is_favorite')
-#
-#                 if product_name:
-#                     product, created = Product.objects.get_or_create(
-#                         name=product_name,
-#                         defaults={'is_favorite': product_is_favorite}
-#                     )
-#
-#                     # Set the product for each ProductDish instance and save
-#                     # formsets have instances, the amount is specified in the extra parameter in the creation of the formset.
-#                     formset_form.instance.product = product
-#                     formset_form.instance.dish = self.object
-#                     formset_form.save()
-#                     ProductDish.objects.create(dish=self.object, product=product)
-#                 UserProduct.objects.get_or_create(user=self.request.user, product=product)
-#
-#             # Create the UserDish instance
-#             UserDish.objects.create(user=self.request.user, dish=self.object)
-#
-#         return redirect(reverse_lazy("dish_list"))
-
-
 class DishUpdateView(LoginRequiredMixin, UpdateView):
-    """This view updates an existing dish object and its related products.
+    """This view updates an existing dish object. A Dish containing multiple products.
 
-    Relations managed in this UpdateView:
+    Relations established in this UpdateView:
         - User with Product: UserProduct model.
         - User with Dish: UserDish model.
         - Product with Dish: ProductDish model.
 
     Forms used:
-        - DishForm: For updating an existing Dish object.
-        - ProductDishFormset: For updating multiple products in the Dish update.
+        - DishForm: For updating a Dish object (form inherits from modelForm).
+        - ProductDishFormset: For managing multiple products in the Dish update.
     """
 
-    login_url = LOGIN_URL
     model = Dish
     form_class = DishForm
     template_name = 'dish/update.html'
     success_url = reverse_lazy('dish_list')
 
-    def get_initial(self):
-        initial = super().get_initial()
-        dish = self.get_object()
-        initial['name'] = dish.name
-        initial['recipe'] = dish.recipe
-        initial['is_favorite'] = dish.is_favorite
-
-        # Pre-fill product details in the formset
-        product_initial = []
-        for product_dish in dish.productdish_set.all():
-            product_initial.append({
-                'product_name': product_dish.product.name,
-                'product_is_favorite': product_dish.product.is_favorite,
-                'quantity': product_dish.quantity,
-                'unit': product_dish.unit,
-            })
-        initial['product_dish_formset'] = product_initial
-        return initial
-
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['formset'] = ProductDishFormSet(self.request.POST)
+            data['productdish_formset'] = ProductDishFormSet(self.request.POST, instance=self.object)
         else:
-            context['formset'] = ProductDishFormSet(initial=self.get_initial().get('product_dish_formset', []))
-        return context
+            data['productdish_formset'] = ProductDishFormSet(instance=self.object)
+            for form in data['productdish_formset']:
+                product_dish = form.instance
+                product = product_dish.product
+                form.fields['product_name'].initial = product.name
+                form.fields['product_is_favorite'].initial = product.is_favorite
+        return data
 
     def form_valid(self, form):
         context = self.get_context_data()
-        formset = context['formset']
-
-        if formset.is_valid():
-            # Object is the dish here.
+        user = self.request.user
+        productdish_formset = context['productdish_formset']
+        if form.is_valid() and productdish_formset.is_valid():
             self.object = form.save()
-            # print(formset)
+            dish = form.save()
 
-            for formset_form in formset:
-                # print(formset_form)
-                # Take the product(name, is_favorite) out of the formset (added in the ProductDishForm)
-                product_name = formset_form.cleaned_data.get('product_name')
-                product_is_favorite = formset_form.cleaned_data.get('product_is_favorite')
+            for productdish_form in productdish_formset:
+                if productdish_form.cleaned_data.get('DELETE'):
+                    productdish_form.instance.delete()
+                    continue
 
-                if product_name:
-                    product, created = Product.objects.get_or_create(
-                        name=product_name,
-                        defaults={'is_favorite': product_is_favorite}
-                    )
+                product_name = productdish_form.cleaned_data.get('product_name')
+                product_is_favorite = productdish_form.cleaned_data.get('product_is_favorite')
+                quantity = productdish_form.cleaned_data.get('quantity')
+                unit = productdish_form.cleaned_data.get('unit')
 
-                    # Set the product for each ProductDish instance and save
-                    # formsets have instances, the amount is specified in the extra parameter in the creation of the formset.
-                    formset_form.instance.product = product
-                    formset_form.instance.dish = self.object
-                    formset_form.save()
-                    ProductDish.objects.create(dish=self.object, product=product)
-                UserProduct.objects.get_or_create(user=self.request.user, product=product)
+                product, created = Product.objects.get_or_create(
+                    name=product_name,
+                    defaults={'is_favorite': product_is_favorite}
+                )
 
-            # Create the UserDish instance
-            UserDish.objects.create(user=self.request.user, dish=self.object)
+                ProductDish.objects.update_or_create(
+                    id=productdish_form.instance.id,
+                    defaults={'dish': dish, 'product': product, 'quantity': quantity, 'unit': unit}
+                )
 
-        return redirect(reverse_lazy("dish_list"))
+                UserProduct.objects.update_or_create(user=user, product=product)
+
+            UserDish.objects.update_or_create(user=user, dish=dish)
+
+            return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
+
+
+class DishDeleteView(LoginRequiredMixin, DeleteView):
+    login_url = LOGIN_URL
+    model = Dish
+    success_url = reverse_lazy('dish_list')
 
 
 class UnitCreateView(LoginRequiredMixin, CreateView):
