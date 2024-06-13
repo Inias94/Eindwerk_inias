@@ -125,3 +125,11 @@ class ProductShoppingList(models.Model):
 
 # TODO: MenuLijst: Relatie tussen gerechten en winkellijst
 
+class MenuList(models.Model):
+    """This model represents a menu. The menu contains an amount of dishes linked to the user"""
+
+    dish = models.ForeignKey(Dish, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'{self.dish}'
