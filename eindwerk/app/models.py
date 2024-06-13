@@ -69,12 +69,15 @@ class ProductDish(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     # Foreign key
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    dish = models.ForeignKey(Dish, on_delete=models.DO_NOTHING)
     unit = models.ForeignKey("Unit", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.product} in {self.dish}"
+
+    class Meta:
+        unique_together = ('product', 'dish')
 
 
 class Unit(models.Model):
