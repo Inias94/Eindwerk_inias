@@ -1,84 +1,176 @@
+{##}
 {#{% extends "base.html" %}#}
 {##}
 {#{% block content %}#}
-{#    <h2>Dish</h2>#}
-{#    <form id="dish-form" action="" method="post">#}
+{#    <div class="container">#}
+{#    <h2>Create Dish</h2>#}
+{#    <form method="post">#}
 {#        {% csrf_token %}#}
-{#        <div>{{ form.as_p }}</div>#}
-{##}
+{#        {{ form.as_p }}#}
 {#        <h3>Products</h3>#}
-{#        {{ formset.management_form }}#}
-{#        {% for items in formset %}#}
-{#            <div class="formset-row">#}
-{#                <div><label>{{ items.product_name.label }}</label>{{ items.product_name }}</div>#}
-{#                <div><label>{{ items.product_is_favorite.label }}</label>{{ items.product_is_favorite }}</div>#}
-{#                <div><label>{{ items.quantity.label }}</label>{{ items.quantity }}</div>#}
-{#                <div><label>{{ items.unit.label }}</label>{{ items.unit }}</div>#}
-{#                <div><button type="button" class="delete-btn">Delete</button></div>#}
-{#            <hr/>#}
+{#        <div id="productdish_formset">#}
+{#            {{ productdish_formset.management_form }}#}
+{#            <div id="product-form-list">#}
+{#                {% for form in productdish_formset %}#}
+{#                    <div class="form-row product-form">#}
+{#                        {{ form.as_p }}#}
+{#                    </div>#}
+{#                {% endfor %}#}
 {#            </div>#}
-{#        {% endfor %}#}
-{#        <button type="button" id="add-more">Add More</button>#}
-{#        <button type="submit">Save</button>#}
+{#        </div>#}
+{#        <button type="button" class="btn btn-secondary" id="add-more">Add more</button>#}
+{#        <button type="submit" class="btn btn-primary">Save</button>#}
 {#    </form>#}
+{##}
+{#    <template id="empty-form-template">#}
+{#        <div class="form-row product-form">#}
+{#            {{ productdish_formset.empty_form.as_p }}#}
+{#        </div>#}
+{#        <hr>#}
+{#    </template>#}
 {##}
 {#    <script>#}
 {#        document.addEventListener('DOMContentLoaded', function() {#}
-{#            var formsets = document.querySelectorAll('.formset-row');#}
-{#            var addMoreBtn = document.getElementById('add-more');#}
+{#            let addMoreBtn = document.getElementById('add-more');#}
+{#            let formsetDiv = document.getElementById('product-form-list');#}
+{#            let totalForms = document.getElementById('id_productdish_set-TOTAL_FORMS');#}
+{#            let emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;#}
+{#            let formNum = parseInt(totalForms.value);#}
 {##}
-{#            formsets.forEach(function(formset, index) {#}
-{#                if (index !== 0) {#}
-{#                    formset.style.display = 'none';#}
-{#                }#}
-{#            });#}
-{##}
-{#            addMoreBtn.addEventListener('click', function() {#}
-{#                var hiddenFormsets = document.querySelectorAll('.formset-row[style="display: none;"]');#}
-{#                if (hiddenFormsets.length > 0) {#}
-{#                    hiddenFormsets[0].style.display = 'block';#}
-{#                }#}
-{#            });#}
-{##}
-{#            document.addEventListener('click', function(event) {#}
-{#                if (event.target.classList.contains('delete-btn')) {#}
-{#                    var row = event.target.closest('.formset-row');#}
-{#                    row.querySelectorAll('input[type="text"], input[type="checkbox"]').forEach(function(input) {#}
-{#                        input.value = '';#}
-{#                    });#}
-{#                    row.style.display = 'none';#}
-{#                }#}
+{#            addMoreBtn.addEventListener('click', function(event) {#}
+{#                event.preventDefault();#}
+{#                let newForm = emptyFormTemplate.replace(/__prefix__/g, formNum);#}
+{#                formsetDiv.insertAdjacentHTML('beforeend', newForm);#}
+{#                formNum++;#}
+{#                totalForms.value = formNum;#}
 {#            });#}
 {#        });#}
 {#    </script>#}
+{#</div>#}
 {#{% endblock %}#}
+{##}
+{##}
+
+{# HIERBOVEN WERKT HELEMAAL ONDERSTAAND IS EEN TEST!!! #}
+
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
+<div class="container">
     <h2>Create Dish</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        
+        <div class="mb-3">
+            {{ form.name.label }}
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="invalid-feedback">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+        
         <h3>Products</h3>
         <div id="productdish_formset">
             {{ productdish_formset.management_form }}
-            <div id="product-form-list">
-                {% for form in productdish_formset %}
-                    <div class="form-row product-form">
-                        {{ form.as_p }}
-                    </div>
-                {% endfor %}
-            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Favorite</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+{#                        <th>Delete</th>#}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="product-form-list">
+                    {% for form in productdish_formset %}
+                        <tr class="product-form">
+                            <td>
+                                {{ form.product_name.label }}
+                                {{ form.product_name }}
+                                {% if form.product_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.product_name.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ form.product_is_favorite.label }}
+                                <div class="d-flex align-items-end">{{ form.product_is_favorite }}</div>
+                                {% if form.product_is_favorite.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.product_is_favorite.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ form.quantity.label }}
+                                {{ form.quantity }}
+                                {% if form.quantity.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.quantity.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ form.unit.label }}
+                                {{ form.unit }}
+                                {% if form.unit.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.unit.errors }}
+                                    </div>
+                                {% endif %}
+                            </td>
+{#                            <td>#}
+{#                                {{ form.DELETE.label }}#}
+{#                                {{ form.DELETE }}#}
+{#                                {% if form.DELETE.errors %}#}
+{#                                    <div class="invalid-feedback">#}
+{#                                        {{ form.DELETE.errors }}#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                            </td>#}
+                            <td>
+                                <button type="button" class="btn btn-danger remove-form">Remove</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <button type="button" class="btn btn-secondary" id="add-more">Add more</button>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 
     <template id="empty-form-template">
-        <div class="form-row product-form">
-            {{ productdish_formset.empty_form.as_p }}
-        </div>
+        <tr class="product-form">
+            <td>
+                <label>{{ productdish_formset.empty_form.product_name.label }}</label>
+                {{ productdish_formset.empty_form.product_name }}
+            </td>
+            <td>
+                <div class="d-flex align-end-center">{{ productdish_formset.empty_form.product_is_favorite.label }}</div>
+                {{ productdish_formset.empty_form.product_is_favorite }}
+            </td>
+            <td>
+                {{ productdish_formset.empty_form.quantity.label }}
+                {{ productdish_formset.empty_form.quantity }}
+            </td>
+            <td>
+                {{ productdish_formset.empty_form.unit.label }}
+                {{ productdish_formset.empty_form.unit }}
+            </td>
+{#            <td>#}
+{#                {{ productdish_formset.empty_form.DELETE.label }}#}
+{#                {{ productdish_formset.empty_form.DELETE }}#}
+{#            </td>#}
+            <td>
+                <button type="button" class="btn btn-danger remove-form">Remove</button>
+            </td>
+        </tr>
     </template>
 
     <script>
@@ -96,9 +188,16 @@
                 formNum++;
                 totalForms.value = formNum;
             });
+
+            formsetDiv.addEventListener('click', function(event) {
+                if (event.target.classList.contains('remove-form')) {
+                    event.preventDefault();
+                    let formRow = event.target.closest('.product-form');
+                    formRow.querySelector('input[type="checkbox"]').checked = true;
+                    formRow.style.display = 'none';
+                }
+            });
         });
     </script>
 </div>
 {% endblock %}
-
-
