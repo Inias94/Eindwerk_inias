@@ -109,6 +109,7 @@ class ProductShoppingList(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, on_delete=models.DO_NOTHING)
     shoppinglist = models.ForeignKey(ShoppingList, on_delete=models.DO_NOTHING)
+    dish = models.ForeignKey(Dish, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -123,3 +124,4 @@ class ProductShoppingList(models.Model):
 
 
 # TODO: MenuLijst: Relatie tussen gerechten en winkellijst
+
