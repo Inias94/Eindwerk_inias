@@ -369,7 +369,7 @@ class UnitCreateView(LoginRequiredMixin, CreateView):
     model = Unit
     form_class = UnitForm
     template_name = "unit/create.html"
-    success_url = reverse_lazy("unit_list")
+    success_url = reverse_lazy("unit_create")
 
 
 class UnitListView(LoginRequiredMixin, ListView):
