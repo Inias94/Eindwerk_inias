@@ -1,9 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<ul>
-    {% for item in object_list %}
-    <li>{{ item.name }}: {{ item.abbreviation }}</li>
-    {% endfor %}
+    <h3>Lijst van jouw maateenheden.</h3>
+    <ul class="card">
+        {% for item in object_list %}
+            <li class="row">
+                <div class="col-md-4">{{ item.name }}: {{ item.abbreviation }}</div>
+                <div class="col-md-4">
+                    <a href="{% url 'unit_update' pk=item.pk %}">Wijzigen</a> /
+                    <a href="{% url 'unit_delete' pk=item.pk %}">Verwijderen</a>
+                </div>
+            </li>
+        {% endfor %}
     </ul>
+
+    <div class="card">
+        <div class="card-title">Om meer eenheden toe te voegen druk hieronder</div>
+        <div class="card-body"><a href="{% url 'unit_create' %}">HIER ICON ZETTEN!</a></div>
+    </div>
 {% endblock %}

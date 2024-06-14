@@ -35,4 +35,6 @@ urlpatterns = [
     # Unit
     path('unit/', views.UnitListView.as_view(), name='unit_list'),
     path('unit/create/', views.UnitCreateView.as_view(), name='unit_create'),
+    path('unit/<int:pk>/update', views.UnitUpdateView.as_view(), name='unit_update'),
+    path('unit/<int:pk>/delete/', views.UnitDeleteView.as_view(), name='unit_delete'),
 ]

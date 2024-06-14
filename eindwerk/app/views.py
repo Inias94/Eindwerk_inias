@@ -290,6 +290,10 @@ class DishUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
+        """Here we are making sure the view knows about the extra context variables. to be handeld in the view.
+        Because of the ProductDishForm inherits from django modelForm, we need to add 2 extra form.fields to the view.
+        for the creation of the product."""
+
         data = super().get_context_data(**kwargs)
         if self.request.method == "POST":
             data["productdish_formset"] = ProductDishFormSet(
@@ -305,6 +309,7 @@ class DishUpdateView(LoginRequiredMixin, UpdateView):
         return data
 
     def form_valid(self, form):
+        # TODO: Add a docstring with info
         context = self.get_context_data()
         user = self.request.user
         productdish_formset = context["productdish_formset"]
@@ -362,6 +367,8 @@ class DishDeleteView(LoginRequiredMixin, DeleteView):
         return redirect(self.get_success_url())
 
 
+# TODO: Templates van unitviews opmaak afwerken
+# TODO: Modal voor save vragen.
 class UnitCreateView(LoginRequiredMixin, CreateView):
     """This view will make it possible to create a new unit."""
 
@@ -371,6 +378,11 @@ class UnitCreateView(LoginRequiredMixin, CreateView):
     template_name = "unit/create.html"
     success_url = reverse_lazy("unit_create")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['unit_list'] = Unit.objects.all()
+        return context
+
 
 class UnitListView(LoginRequiredMixin, ListView):
     """This view will show a list of ALL units."""
@@ -378,3 +390,22 @@ class UnitListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
     model = Unit
     template_name = "unit/list.html"
+
+
+class UnitUpdateView(LoginRequiredMixin, UpdateView):
+    """This view is to make it possible to adjust a Unit model."""
+
+    login_url = LOGIN_URL
+    model = Unit
+    form_class = UnitForm
+    template_name = 'unit/update.html'
+    success_url = reverse_lazy('unit_list')
+
+
+class UnitDeleteView(LoginRequiredMixin, DeleteView):
+    """This view makes it possible to delete a Unit model."""
+
+    login_url = LOGIN_URL
+    model = Unit
+    template_name = 'unit/delete.html'
+    success_url = reverse_lazy('unit_list')

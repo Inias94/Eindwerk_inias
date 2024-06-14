@@ -9,4 +9,12 @@
             {{ form.abbreviation }}</p>
         <button class="btn btn-primary" type="submit">Submit</button>
     </form>
+
+    <h2>Unit List</h2>
+    <h4>To edit a unit press here <a href="{% url 'unit_list' %}">Go to Edit page</a></h4>
+    <ul>
+        {% for unit in unit_list %}
+            <li>{{ unit.name }}: {{ unit.abbreviation }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

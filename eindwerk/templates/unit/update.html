@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card text-center">
+        <form action="" method="post">
+            {% csrf_token %}
+            <p>{{ form.name }}</p>
+            <p>{{ form.abbreviation }}</p>
+            <p>
+                <button class="btn btn-success text-center" type="submit">Opslaan</button>
+            </p>
+        </form>
+    </div>
+{% endblock %}
