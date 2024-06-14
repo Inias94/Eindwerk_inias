@@ -70,7 +70,7 @@ class ProductDish(models.Model):
 
     # Foreign key
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
-    dish = models.ForeignKey(Dish, on_delete=models.DO_NOTHING)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     unit = models.ForeignKey("Unit", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self) -> str:
@@ -112,7 +112,7 @@ class ProductShoppingList(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, on_delete=models.DO_NOTHING)
     shoppinglist = models.ForeignKey(ShoppingList, on_delete=models.DO_NOTHING)
-    dish = models.ForeignKey(Dish, on_delete=models.DO_NOTHING, blank=True, null=True)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -131,7 +131,7 @@ class ProductShoppingList(models.Model):
 class MenuList(models.Model):
     """This model represents a menu. The menu contains an amount of dishes linked to the user"""
 
-    dish = models.ForeignKey(Dish, on_delete=models.DO_NOTHING)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:

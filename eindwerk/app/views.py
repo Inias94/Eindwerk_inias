@@ -27,7 +27,7 @@ from .models import (
     ShoppingList,
     Unit,
     UserDish,
-    UserProduct,
+    UserProduct, MenuList,
 )
 
 
@@ -350,14 +350,16 @@ class DishUpdateView(LoginRequiredMixin, UpdateView):
 
 class DishDeleteView(LoginRequiredMixin, DeleteView):
     login_url = LOGIN_URL
+    template_name = 'dish/delete.html'
     model = Dish
     success_url = reverse_lazy("dish_list")
 
-    # def delete(self, request, *args, **kwargs):
-    #     self.object = self.get_object()
-    #     success_url = self.get_success_url()
-    #     self.object.delete()
-    #     return redirect(success_url)
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        UserDish.objects.filter(dish=self.object).delete()
+        ProductDish.objects.filter(dish=self.object).delete()
+        self.object.delete()
+        return redirect(self.get_success_url())
 
 
 class UnitCreateView(LoginRequiredMixin, CreateView):
