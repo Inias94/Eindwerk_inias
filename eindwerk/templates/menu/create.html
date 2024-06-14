@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h3>Stel jouw menu samen!</h3>
+
+    <div>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-success" type="submit">Sla op!</button>
+        </form>
+    </div>
+{% endblock %}

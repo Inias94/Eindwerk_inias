@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ShoppingList, Product, ProductDish, Dish, Unit, User
+from .models import ShoppingList, Product, ProductDish, Dish, Unit, MenuList
 
 
 class ProductForm(forms.ModelForm):
@@ -109,3 +109,9 @@ class UnitForm(forms.ModelForm):
                 'placeholder': 'Unit abbreviation',
             })
         }
+
+
+class MenuForm(forms.ModelForm):
+    class Meta:
+        model = MenuList
+        fields = "__all__"

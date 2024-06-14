@@ -17,7 +17,7 @@ from django.views.generic import (
 # Project imports
 from eindwerk.settings import LOGIN_URL
 
-from .forms import DishForm, ProductDishForm, ProductForm, ShoppingListForm, UnitForm
+from .forms import DishForm, ProductDishForm, ProductForm, ShoppingListForm, UnitForm, MenuForm
 from .formsets import ProductDishFormSet
 from .models import (
     Dish,
@@ -409,3 +409,21 @@ class UnitDeleteView(LoginRequiredMixin, DeleteView):
     model = Unit
     template_name = 'unit/delete.html'
     success_url = reverse_lazy('unit_list')
+
+
+class MenuListView(LoginRequiredMixin, CreateView):
+    """This view lists your items in your menu."""
+
+    login_url = LOGIN_URL
+    model = Menu
+    template_name = 'menu/list.html'
+
+
+class MenuCreateView(LoginRequiredMixin, CreateView):
+    """This view will let you add dishes to your menu."""
+
+    login_url = LOGIN_URL
+    model = Menu
+    form_class = MenuForm
+    template_name = 'menu/create.html'
+    success_url = reverse_lazy('menu_list')
