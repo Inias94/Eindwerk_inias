@@ -4,14 +4,31 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView, DetailView, detail, DeleteView
+from django.views.generic import (
+    CreateView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    DetailView,
+    detail,
+    DeleteView,
+)
 
 # Project imports
 from eindwerk.settings import LOGIN_URL
 
 from .forms import DishForm, ProductDishForm, ProductForm, ShoppingListForm, UnitForm
 from .formsets import ProductDishFormSet
-from .models import Dish, Product, ProductDish, ProductShoppingList, ShoppingList, Unit, UserDish, UserProduct
+from .models import (
+    Dish,
+    Product,
+    ProductDish,
+    ProductShoppingList,
+    ShoppingList,
+    Unit,
+    UserDish,
+    UserProduct,
+)
 
 
 # TODO:: Alle templates hun styling moet nog gebeuren.
@@ -35,7 +52,7 @@ class ShoppingListCreateView(LoginRequiredMixin, CreateView):
     # A shoppinglist will be created when visiting the endpoint.
     def get(self, request, *args, **kwargs):
         ShoppingList.objects.create(user=self.request.user)
-        return redirect(reverse_lazy('shoppinglist'))
+        return redirect(reverse_lazy("shoppinglist"))
 
     # We are not using the form anymore, only the endpoint for this.
     # def form_valid(self, form):
@@ -81,7 +98,7 @@ class ProductDishUpdateView(LoginRequiredMixin, UpdateView):
     login_url = LOGIN_URL
     model = ProductDish
     form_class = ProductDishForm
-    template_name = 'product_dish/update.html'
+    template_name = "product_dish/update.html"
 
     def get_queryset(self):
         # We need to make sure that the user can only edit hos own objects.
@@ -92,17 +109,16 @@ class ProductDishUpdateView(LoginRequiredMixin, UpdateView):
         # Add product_name and product_is_favorite to initial values.
         initial = super().get_initial()
         product_dish = self.get_object()
-        initial['product_name'] = product_dish.product.name
-        initial['product_is_favorite'] = product_dish.product.is_favorite
+        initial["product_name"] = product_dish.product.name
+        initial["product_is_favorite"] = product_dish.product.is_favorite
         return initial
 
     def form_valid(self, form):
-        product_name = form.cleaned_data.get('product_name')
-        product_is_favorite = form.cleaned_data.get('product_is_favorite')
+        product_name = form.cleaned_data.get("product_name")
+        product_is_favorite = form.cleaned_data.get("product_is_favorite")
 
         product, created = Product.objects.get_or_create(
-            name=product_name,
-            defaults={'is_favorite': product_is_favorite}
+            name=product_name, defaults={"is_favorite": product_is_favorite}
         )
 
         if not created:
@@ -115,14 +131,14 @@ class ProductDishUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         # After saving go back to the detailview of the dish.
-        return reverse_lazy('dish_detail', kwargs={'pk': self.object.dish.pk})
+        return reverse_lazy("dish_detail", kwargs={"pk": self.object.dish.pk})
 
 
 class ProductDishDeleteView(LoginRequiredMixin, DeleteView):
     login_url = LOGIN_URL
     model = ProductDish
-    template_name = 'product_dish/delete.html'
-    success_url = reverse_lazy('dish_list')
+    template_name = "product_dish/delete.html"
+    success_url = reverse_lazy("dish_list")
 
 
 class DishListView(LoginRequiredMixin, ListView):
@@ -143,11 +159,13 @@ class DishListView(LoginRequiredMixin, ListView):
         dish_products = {}
         for dish in dishes:
             # Query all products associated with the current dish.
-            products = ProductDish.objects.filter(dish=dish).select_related('product', 'unit')
+            products = ProductDish.objects.filter(dish=dish).select_related(
+                "product", "unit"
+            )
             dish_products[dish] = products
 
         # Add the dish-products dictionary and the current user to the context.
-        context['dish_products'] = dish_products
+        context["dish_products"] = dish_products
         return context
 
 
@@ -157,20 +175,22 @@ class DishDetailView(LoginRequiredMixin, DetailView):
 
     login_url = LOGIN_URL
     model = Dish
-    template_name = 'dish/detail.html'
+    template_name = "dish/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         # Get the current user.
         user = self.request.user
         # Query the dish for the user
-        dishes = Dish.objects.filter(pk=self.kwargs['pk'])
+        dishes = Dish.objects.filter(pk=self.kwargs["pk"])
 
         dish_products = {}
         for dish in dishes:
-            dish_products[dish] = ProductDish.objects.filter(dish=dish).select_related('product', 'unit')
+            dish_products[dish] = ProductDish.objects.filter(dish=dish).select_related(
+                "product", "unit"
+            )
         print(dish_products)
-        context['dish_products'] = dish_products
+        context["dish_products"] = dish_products
         # print("Dish Products:", dish_products)
         return context
 
@@ -200,21 +220,21 @@ class DishCreateView(LoginRequiredMixin, CreateView):
 
     model = Dish
     form_class = DishForm
-    template_name = 'dish/create.html'
-    success_url = reverse_lazy('dish_list')
+    template_name = "dish/create.html"
+    success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        if self.request == "POST":
-            data['productdish_formset'] = ProductDishFormSet(self.request.POST)
+        if self.request.method == "POST":
+            data["productdish_formset"] = ProductDishFormSet(self.request.POST)
         else:
-            data['productdish_formset'] = ProductDishFormSet()
+            data["productdish_formset"] = ProductDishFormSet()
         return data
 
     def form_valid(self, form):
         context = self.get_context_data()
         user = self.request.user
-        productdish_formset = context['productdish_formset']
+        productdish_formset = context["productdish_formset"]
         if form.is_valid() and productdish_formset.is_valid():
             self.object = form.save()
 
@@ -223,23 +243,23 @@ class DishCreateView(LoginRequiredMixin, CreateView):
 
             # Iterate over the productdish_formset and save each ProductDish object
             for productdish_form in productdish_formset:
-
                 # These fields are manually added to the ProductDishForm, therefor we have to extract the data out of the form fields.
-                product_name = productdish_form.cleaned_data.get('product_name')
-                product_is_favorite = productdish_form.cleaned_data.get('product_is_favorite')
+                product_name = productdish_form.cleaned_data.get("product_name")
+                product_is_favorite = productdish_form.cleaned_data.get(
+                    "product_is_favorite"
+                )
 
                 # Create or get the Product with the data from above.
                 product, created = Product.objects.get_or_create(
-                    name=product_name,
-                    defaults={'is_favorite': product_is_favorite}
+                    name=product_name, defaults={"is_favorite": product_is_favorite}
                 )
 
                 # Create the ProductDish object
                 ProductDish.objects.create(
                     dish=dish,
                     product=product,
-                    quantity=productdish_form.cleaned_data.get('quantity'),
-                    unit=productdish_form.cleaned_data.get('unit')
+                    quantity=productdish_form.cleaned_data.get("quantity"),
+                    unit=productdish_form.cleaned_data.get("unit"),
                 )
                 # Create the UserProduct object
                 UserProduct.objects.create(user=user, product=product)
@@ -266,53 +286,62 @@ class DishUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Dish
     form_class = DishForm
-    template_name = 'dish/update.html'
-    success_url = reverse_lazy('dish_list')
+    template_name = "dish/update.html"
+    success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['productdish_formset'] = ProductDishFormSet(self.request.POST, instance=self.object)
+        if self.request.method == "POST":
+            data["productdish_formset"] = ProductDishFormSet(
+                self.request.POST, instance=self.object
+            )
         else:
-            data['productdish_formset'] = ProductDishFormSet(instance=self.object)
-            for form in data['productdish_formset']:
+            data["productdish_formset"] = ProductDishFormSet(instance=self.object)
+            for form in data["productdish_formset"]:
                 product_dish = form.instance
                 product = product_dish.product
-                form.fields['product_name'].initial = product.name
-                form.fields['product_is_favorite'].initial = product.is_favorite
+                form.fields["product_name"].initial = product.name
+                form.fields["product_is_favorite"].initial = product.is_favorite
         return data
 
     def form_valid(self, form):
         context = self.get_context_data()
         user = self.request.user
-        productdish_formset = context['productdish_formset']
+        productdish_formset = context["productdish_formset"]
+
         if form.is_valid() and productdish_formset.is_valid():
             self.object = form.save()
             dish = form.save()
 
             for productdish_form in productdish_formset:
-                if productdish_form.cleaned_data.get('DELETE'):
+                if productdish_form.cleaned_data.get("DELETE"):
                     productdish_form.instance.delete()
                     continue
 
-                product_name = productdish_form.cleaned_data.get('product_name')
-                product_is_favorite = productdish_form.cleaned_data.get('product_is_favorite')
-                quantity = productdish_form.cleaned_data.get('quantity')
-                unit = productdish_form.cleaned_data.get('unit')
+                product_name = productdish_form.cleaned_data.get("product_name")
+                product_is_favorite = productdish_form.cleaned_data.get(
+                    "product_is_favorite"
+                )
+                quantity = productdish_form.cleaned_data.get("quantity")
+                unit = productdish_form.cleaned_data.get("unit")
 
                 product, created = Product.objects.get_or_create(
-                    name=product_name,
-                    defaults={'is_favorite': product_is_favorite}
+                    name=product_name, defaults={"is_favorite": product_is_favorite}
                 )
 
                 ProductDish.objects.update_or_create(
                     id=productdish_form.instance.id,
-                    defaults={'dish': dish, 'product': product, 'quantity': quantity, 'unit': unit}
+                    defaults={
+                        "dish": dish,
+                        "product": product,
+                        "quantity": quantity,
+                        "unit": unit,
+                    },
                 )
 
-                UserProduct.objects.update_or_create(user=user, product=product)
+                UserProduct.objects.get_or_create(user=user, product=product)
 
-            UserDish.objects.update_or_create(user=user, dish=dish)
+            UserDish.objects.get_or_create(user=user, dish=dish)
 
             return redirect(self.get_success_url())
         else:
@@ -322,7 +351,13 @@ class DishUpdateView(LoginRequiredMixin, UpdateView):
 class DishDeleteView(LoginRequiredMixin, DeleteView):
     login_url = LOGIN_URL
     model = Dish
-    success_url = reverse_lazy('dish_list')
+    success_url = reverse_lazy("dish_list")
+
+    # def delete(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     success_url = self.get_success_url()
+    #     self.object.delete()
+    #     return redirect(success_url)
 
 
 class UnitCreateView(LoginRequiredMixin, CreateView):

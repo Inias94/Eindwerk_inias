@@ -5,6 +5,7 @@
         <div class="row align-items-center">
             <div class="col mt-3">
                 <h4>{{ dish.name }}</h4>
+                <a href="{% url 'dish_delete' pk=dish.pk %}">delete</a>
             </div>
             <div class="col">
                 <a href="#" class="btn btn-success"><h4 class="bi bi-cart-plus text-center"></h4></a>
