@@ -85,3 +85,5 @@ class MenuUpdateView(LoginRequiredMixin, UpdateView):
                     menu=self.object, dish=dish_form.cleaned_data["dish"]
                 )
             return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))

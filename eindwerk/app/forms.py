@@ -144,12 +144,15 @@ class MenuForm(forms.ModelForm):
             ),
         }
 
+
 class DishMenuForm(forms.ModelForm):
     class Meta:
         model = DishMenu
-        fields = ['dish']
+        fields = ["dish"]
         widgets = {
-            'dish': forms.Select(attrs={
-                "class": "form-select",
-            }),
+            "dish": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
         }
