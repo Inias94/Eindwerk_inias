@@ -13,13 +13,13 @@ from django.urls import reverse_lazy
 # Project imports
 
 from django.conf import settings
-from ..models import Dish, ProductDish, Product, UserDish, UserProduct
+from ..models import Dish, ProductDish, Product, UserDish, UserProduct, MenuList
 from ..custom_mixins import UserDishAccessMixin
 from ..forms import DishForm
 from ..formsets import ProductDishFormSet
 
 
-class DishListView(LoginRequiredMixin, UserDishAccessMixin, ListView):
+class DishListView(LoginRequiredMixin, ListView):
     """This view will show you a list of all the users dishes. Including the recipe and the products in it."""
 
     login_url = settings.LOGIN_URL
@@ -37,13 +37,16 @@ class DishListView(LoginRequiredMixin, UserDishAccessMixin, ListView):
         dish_products = {}
         for dish in dishes:
             # Query all products associated with the current dish.
-            products = ProductDish.objects.filter(dish=dish).select_related(
-                "product", "unit"
-            )
+            products = ProductDish.objects.filter(dish=dish).select_related("product", "unit")
             dish_products[dish] = products
 
-        # Add the dish-products dictionary and the current user to the context.
+        # Query all menus belonging to the current user.
+        menus = MenuList.objects.filter(usermenu__user=user)
+
+        # Add the dish-products dictionary, the current user, and the user's menus to the context.
         context["dish_products"] = dish_products
+        context["menus"] = menus
+        context["user"] = user
         return context
 
 

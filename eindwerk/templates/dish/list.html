@@ -3,9 +3,8 @@
 {% block content %}
     <div class="container">
         <h2>Gerechten van: {{ user.username }}</h2>
-        <label for="searchInput">Zoek je iets specifiek?</label><input type="text" id="searchInput"
-                                                                       class="form-control mb-3"
-                                                                       placeholder="Zoeken...">
+        <label for="searchInput">Zoek je iets specifiek?</label>
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Zoeken...">
         <div><a href="{% url 'dish_create' %}">Voeg een gerecht toe aan je collectie</a></div>
         <hr>
         <div class="row">
@@ -18,8 +17,11 @@
                                         data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true"
                                         aria-controls="collapse{{ forloop.counter }}">
                                     <span class="col">{{ dish.name }}</span>
-                                    <span class="col-auto px-2"><a href="#"><i
-                                            class="bi bi-cart-plus btn btn-success"></i></a></span>
+                                    <span class="col-auto px-2">
+                                        <a href="#" class="add-to-menu-btn" data-dish-id="{{ dish.id }}" data-bs-toggle="modal" data-bs-target="#addToMenuModal">
+                                            <i class="bi bi-cart-plus btn btn-success"></i>
+                                        </a>
+                                    </span>
                                 </button>
                             </h2>
                             <div id="collapse{{ forloop.counter }}"
@@ -35,27 +37,26 @@
                                     </div>
                                     <table class="table">
                                         <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th class="text-end">Hoeveelheid</th>
-                                            <th>Eenheid</th>
-                                        </tr>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th class="text-end">Hoeveelheid</th>
+                                                <th>Eenheid</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        {% for product_dish in products %}
-                                            <tr>
-                                                <td>{{ product_dish.product.name }}</td>
-                                                {% if product_dish.quantity is NULL %}
-                                                    <td class="text-end">/</td>
-                                                {% else %}
-                                                    <td class="text-end">{{ product_dish.quantity }}</td>
-                                                {% endif %}
-                                                <td>{{ product_dish.unit.abbreviation }}</td>
-                                            </tr>
-                                        {% endfor %}
+                                            {% for product_dish in products %}
+                                                <tr>
+                                                    <td>{{ product_dish.product.name }}</td>
+                                                    {% if product_dish.quantity is NULL %}
+                                                        <td class="text-end">/</td>
+                                                    {% else %}
+                                                        <td class="text-end">{{ product_dish.quantity }}</td>
+                                                    {% endif %}
+                                                    <td>{{ product_dish.unit.abbreviation }}</td>
+                                                </tr>
+                                            {% endfor %}
                                         </tbody>
                                     </table>
-                                    {#                    <p><a href="{% url 'dish-detail' %}"></a></p>#}
                                 </div>
                             </div>
                         </div>
@@ -68,7 +69,41 @@
         </div>
     </div>
 
+    <!-- Add to Menu Modal -->
+    <div class="modal fade" id="addToMenuModal" tabindex="-1" aria-labelledby="addToMenuModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addToMenuModalLabel">Voeg toe aan menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-to-menu-form" method="POST" action="{% url 'add_to_menu' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="dish_id" id="dish_id">
+                        <div class="mb-3">
+                            <label for="menu_id" class="form-label">Selecteer Menu</label>
+                            <select class="form-select" name="menu_id" id="menu_id" required>
+                                {% for menu in menus %}
+                                    <option value="{{ menu.id }}">{{ menu.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Voeg toe aan menu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        document.querySelectorAll('.add-to-menu-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const dishId = this.getAttribute('data-dish-id');
+                document.getElementById('dish_id').value = dishId;
+            });
+        });
+
         document.getElementById('searchInput').addEventListener('keyup', function () {
             var input, filter, accordion, panel, i, txtValue;
             input = document.getElementById('searchInput');
