@@ -18,7 +18,7 @@ class UserProduct(models.Model):
 
     # Foreign keys
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    product = models.ForeignKey("Product", on_delete=models.CASCADE, unique=True)
 
     def __str__(self) -> str:
         return f"{self.user} & {self.product}"
@@ -29,7 +29,7 @@ class UserDish(models.Model):
 
     # Foreign keys
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_dishes")
-    dish = models.ForeignKey("Dish", on_delete=models.CASCADE)
+    dish = models.ForeignKey("Dish", on_delete=models.CASCADE, unique=True)
 
     def __str__(self) -> str:
         return f"{self.user} dish: {self.dish}"
@@ -78,6 +78,10 @@ class ProductDish(models.Model):
 
     class Meta:
         unique_together = ('product', 'dish')
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'dish'],
+                                    name='unique_product_dish')
+        ]
 
 
 class Unit(models.Model):
@@ -118,7 +122,7 @@ class ProductShoppingList(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["product", "shoppinglist"],
-                name="unique_product_in_shoppinglist",
+                name="unique_product_shoppinglist",
             )
         ]
 

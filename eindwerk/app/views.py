@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db import transaction
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
     ListView,
@@ -17,7 +17,14 @@ from django.views.generic import (
 # Project imports
 from eindwerk.settings import LOGIN_URL
 
-from .forms import DishForm, ProductDishForm, ProductForm, ShoppingListForm, UnitForm, MenuForm
+from .forms import (
+    DishForm,
+    ProductDishForm,
+    ProductForm,
+    ShoppingListForm,
+    UnitForm,
+    MenuForm,
+)
 from .formsets import ProductDishFormSet
 from .models import (
     Dish,
@@ -27,7 +34,8 @@ from .models import (
     ShoppingList,
     Unit,
     UserDish,
-    UserProduct, MenuList,
+    UserProduct,
+    MenuList,
 )
 
 
@@ -117,7 +125,7 @@ class ProductDishUpdateView(LoginRequiredMixin, UpdateView):
         product_name = form.cleaned_data.get("product_name")
         product_is_favorite = form.cleaned_data.get("product_is_favorite")
 
-        product, created = Product.objects.get_or_create(
+        product, created = Product.objects.update_or_create(
             name=product_name, defaults={"is_favorite": product_is_favorite}
         )
 
@@ -138,7 +146,20 @@ class ProductDishDeleteView(LoginRequiredMixin, DeleteView):
     login_url = LOGIN_URL
     model = ProductDish
     template_name = "product_dish/delete.html"
-    success_url = reverse_lazy("dish_list")
+
+    def get_object(self, queryset=None):
+        # Get the current user.
+        user = self.request.user
+        # Get the dish object.
+        obj = super().get_object(queryset=queryset)
+        # Check if the dish belongs to the current user.
+        if not UserDish.objects.filter(dish=obj.dish, user=user).exists():
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse("dish_detail", kwargs={"pk": obj.dish.pk})
 
 
 class DishListView(LoginRequiredMixin, ListView):
@@ -243,7 +264,7 @@ class DishCreateView(LoginRequiredMixin, CreateView):
 
             # Iterate over the productdish_formset and save each ProductDish object
             for productdish_form in productdish_formset:
-                # These fields are manually added to the ProductDishForm, therefor we have to extract the data out of the form fields.
+                # These fields are manually added to the ProductDishForm, therefore we have to extract the data out of the form fields.
                 product_name = productdish_form.cleaned_data.get("product_name")
                 product_is_favorite = productdish_form.cleaned_data.get(
                     "product_is_favorite"
@@ -255,16 +276,16 @@ class DishCreateView(LoginRequiredMixin, CreateView):
                 )
 
                 # Create the ProductDish object
-                ProductDish.objects.create(
+                ProductDish.objects.get_or_create(
                     dish=dish,
                     product=product,
                     quantity=productdish_form.cleaned_data.get("quantity"),
                     unit=productdish_form.cleaned_data.get("unit"),
                 )
                 # Create the UserProduct object
-                UserProduct.objects.create(user=user, product=product)
+                UserProduct.objects.get_or_create(user=user, product=product)
             # Create the UserDish object for establishing the relation between the user and the dish.
-            UserDish.objects.create(user=user, dish=dish)
+            UserDish.objects.get_or_create(user=user, dish=dish)
 
             return redirect(self.get_success_url())
         else:
@@ -355,7 +376,7 @@ class DishUpdateView(LoginRequiredMixin, UpdateView):
 
 class DishDeleteView(LoginRequiredMixin, DeleteView):
     login_url = LOGIN_URL
-    template_name = 'dish/delete.html'
+    template_name = "dish/delete.html"
     model = Dish
     success_url = reverse_lazy("dish_list")
 
@@ -365,6 +386,16 @@ class DishDeleteView(LoginRequiredMixin, DeleteView):
         ProductDish.objects.filter(dish=self.object).delete()
         self.object.delete()
         return redirect(self.get_success_url())
+
+    def get_object(self, queryset=None):
+        # Get the current user.
+        user = self.request.user
+        # Get the dish object.
+        obj = super().get_object(queryset=queryset)
+        # Check if the dish belongs to the current user.
+        if not Dish.objects.filter(id=obj.id, userdish__user=user).exists():
+            raise PermissionDenied
+        return obj
 
 
 # TODO: Templates van unitviews opmaak afwerken
@@ -380,7 +411,7 @@ class UnitCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['unit_list'] = Unit.objects.all()
+        context["unit_list"] = Unit.objects.all()
         return context
 
 
@@ -398,8 +429,8 @@ class UnitUpdateView(LoginRequiredMixin, UpdateView):
     login_url = LOGIN_URL
     model = Unit
     form_class = UnitForm
-    template_name = 'unit/update.html'
-    success_url = reverse_lazy('unit_list')
+    template_name = "unit/update.html"
+    success_url = reverse_lazy("unit_list")
 
 
 class UnitDeleteView(LoginRequiredMixin, DeleteView):
@@ -407,23 +438,26 @@ class UnitDeleteView(LoginRequiredMixin, DeleteView):
 
     login_url = LOGIN_URL
     model = Unit
-    template_name = 'unit/delete.html'
-    success_url = reverse_lazy('unit_list')
+    template_name = "unit/delete.html"
+    success_url = reverse_lazy("unit_list")
 
 
 class MenuListView(LoginRequiredMixin, CreateView):
     """This view lists your items in your menu."""
 
     login_url = LOGIN_URL
-    model = Menu
-    template_name = 'menu/list.html'
+    model = MenuList
+    template_name = "menu/list.html"
 
 
 class MenuCreateView(LoginRequiredMixin, CreateView):
     """This view will let you add dishes to your menu."""
 
     login_url = LOGIN_URL
-    model = Menu
+    model = MenuList
     form_class = MenuForm
-    template_name = 'menu/create.html'
-    success_url = reverse_lazy('menu_list')
+    template_name = "menu/create.html"
+    success_url = reverse_lazy("menu_list")
+
+    def get_queryset(self):
+        return MenuList.objects.filter(user=self.request.user)

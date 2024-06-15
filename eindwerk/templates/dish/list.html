@@ -6,6 +6,8 @@
         <label for="searchInput">Zoek je iets specifiek?</label><input type="text" id="searchInput"
                                                                        class="form-control mb-3"
                                                                        placeholder="Zoeken...">
+        <div><a href="{% url 'dish_create' %}">Voeg een gerecht toe aan je collectie</a></div>
+        <hr>
         <div class="row">
             <div class="col-md-6">
                 <div class="accordion" id="accordionExample">
@@ -16,7 +18,8 @@
                                         data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true"
                                         aria-controls="collapse{{ forloop.counter }}">
                                     <span class="col">{{ dish.name }}</span>
-                                    <span class="col-auto px-2"><a href="#"><i class="bi bi-cart-plus btn btn-success"></i></a></span>
+                                    <span class="col-auto px-2"><a href="#"><i
+                                            class="bi bi-cart-plus btn btn-success"></i></a></span>
                                 </button>
                             </h2>
                             <div id="collapse{{ forloop.counter }}"
@@ -24,7 +27,10 @@
                                  aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <div class="card border-0 my-3">
-                                        <h5 class="card-title mx-3 mt-2">Recept</h5>
+                                        <div class="row">
+                                            <h5 class="card-title mx-3 mt-2 col">Recept</h5>
+                                            <a class="col" href="{% url 'dish_detail' pk=dish.pk %}">Detail</a>
+                                        </div>
                                         <p class="card-text mx-3 my-2">{{ dish.recipe|linebreaks }}</p>
                                     </div>
                                     <table class="table">
@@ -39,7 +45,11 @@
                                         {% for product_dish in products %}
                                             <tr>
                                                 <td>{{ product_dish.product.name }}</td>
-                                                <td class="text-end">{{ product_dish.quantity }}</td>
+                                                {% if product_dish.quantity is NULL %}
+                                                    <td class="text-end">/</td>
+                                                {% else %}
+                                                    <td class="text-end">{{ product_dish.quantity }}</td>
+                                                {% endif %}
                                                 <td>{{ product_dish.unit.abbreviation }}</td>
                                             </tr>
                                         {% endfor %}
