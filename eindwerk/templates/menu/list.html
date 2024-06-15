@@ -4,7 +4,7 @@
     <h3>Menu lijst</h3>
     <ul>
     {% for item in object_list %}
-        <li>{{ item }}</li>
+        <li>{{ item }} <a href="{% url 'menu_detail' pk=item.pk %}">Detail</a></li>
     {% endfor %}
     </ul>
 {% endblock %}

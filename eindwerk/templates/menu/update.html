@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Update Menu</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <h3>Dishes</h3>
+        <div id="dishes_formset">
+            {{ formset.management_form }}
+            <div id="dish-form-list">
+                {% for form in formset %}
+                    <div class="form-row dish-form">
+                        {{ form.as_p }}
+                        <button type="button" class="btn btn-danger remove-form">Remove</button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-more">Add more</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+
+    <template id="empty-form-template">
+        <div class="form-row dish-form">
+            {{ formset.empty_form.as_p }}
+            <button type="button" class="btn btn-danger remove-form">Remove</button>
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let addMoreBtn = document.getElementById('add-more');
+            let formsetDiv = document.getElementById('dish-form-list');
+            let totalForms = document.getElementById('id_dishmenu_set-TOTAL_FORMS');
+            let emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
+            let formNum = parseInt(totalForms.value);
+
+            addMoreBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                let newForm = emptyFormTemplate.replace(/__prefix__/g, formNum);
+                formsetDiv.insertAdjacentHTML('beforeend', newForm);
+                formNum++;
+                totalForms.value = formNum;
+            });
+
+            formsetDiv.addEventListener('click', function(event) {
+                if (event.target.classList.contains('remove-form')) {
+                    event.preventDefault();
+                    let formRow = event.target.closest('.dish-form');
+                    formRow.remove();
+                    formNum--;
+                    totalForms.value = formNum;
+                }
+            });
+        });
+    </script>
+</div>
+{% endblock %}
