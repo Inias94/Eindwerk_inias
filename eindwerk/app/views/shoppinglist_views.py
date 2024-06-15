@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, ListView
 
 # Project imports
-from eindwerk.eindwerk.settings import LOGIN_URL
+from django.conf import settings
 from ..models import ShoppingList
 from ..forms import ShoppingListForm
 
@@ -13,7 +13,7 @@ from ..forms import ShoppingListForm
 class ShoppingListCreateView(LoginRequiredMixin, CreateView):
     """This view creates a new shopping list object."""
 
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = ShoppingList
     form_class = ShoppingListForm
     template_name = "shoppinglist/create.html"
@@ -29,7 +29,7 @@ class ShoppingListCreateView(LoginRequiredMixin, CreateView):
 class ShoppingListUpdateView(LoginRequiredMixin, UpdateView):
     """This view is to make adjustments to the items in the shopping list."""
 
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = ShoppingList
     form_class = ShoppingListForm
     template_name = "shoppinglist/create.html"
@@ -39,7 +39,7 @@ class ShoppingListUpdateView(LoginRequiredMixin, UpdateView):
 class ShoppingListListView(LoginRequiredMixin, ListView):
     """This view will show you a list of all the users shopping lists."""
 
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = ShoppingList
     template_name = "shoppinglist/list.html"
 

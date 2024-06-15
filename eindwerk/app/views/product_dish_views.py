@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import UpdateView, DeleteView
 
 # Project imports
-from eindwerk.eindwerk.settings import LOGIN_URL
+from django.conf import settings
 from ..custom_mixins import UserDishAccessMixin
 from ..models import ProductDish, Product
 from ..forms import ProductDishForm
@@ -12,7 +12,7 @@ from ..forms import ProductDishForm
 
 class ProductDishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
     # TODO: DOCSTRING!
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = ProductDish
     form_class = ProductDishForm
     template_name = "product_dish/update.html"
@@ -50,7 +50,7 @@ class ProductDishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView)
 
 
 class ProductDishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = ProductDish
     template_name = "product_dish/delete.html"
 

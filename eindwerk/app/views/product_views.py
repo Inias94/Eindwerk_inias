@@ -3,14 +3,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 
 # Project imports
-from eindwerk.app.models import Product
-from eindwerk.eindwerk.settings import LOGIN_URL
+from ..models import Product
+from django.conf import settings
 
 
 class ProductListView(LoginRequiredMixin, ListView):
     """This view will show you a list of all the users products."""
 
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = Product
     template_name = "shoppinglist/list.html"
 

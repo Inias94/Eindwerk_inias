@@ -11,7 +11,8 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 
 # Project imports
-from eindwerk.eindwerk.settings import LOGIN_URL
+
+from django.conf import settings
 from ..models import Dish, ProductDish, Product, UserDish, UserProduct
 from ..custom_mixins import UserDishAccessMixin
 from ..forms import DishForm
@@ -21,7 +22,7 @@ from ..formsets import ProductDishFormSet
 class DishListView(LoginRequiredMixin, UserDishAccessMixin, ListView):
     """This view will show you a list of all the users dishes. Including the recipe and the products in it."""
 
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = Dish
     template_name = "dish/list.html"
 
@@ -50,7 +51,7 @@ class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
     """This view makes it possible to look to a dish in detail.
     It will only show dishes that are related to the user."""
 
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     model = Dish
     template_name = "dish/detail.html"
 
@@ -216,7 +217,7 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
 
 
 class DishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
-    login_url = LOGIN_URL
+    login_url = settings.LOGIN_URL
     template_name = "dish/delete.html"
     model = Dish
     success_url = reverse_lazy("dish_list")
