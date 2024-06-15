@@ -8,7 +8,7 @@
         <div><a href="{% url 'dish_create' %}">Voeg een gerecht toe aan je collectie</a></div>
         <hr>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col">
                 <div class="accordion" id="accordionExample">
                     {% for dish, products in dish_products.items %}
                         <div class="accordion-item px-3">
@@ -63,9 +63,9 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">text hier</div>
-            </div>
+{#            <div class="col-md-6">#}
+{#                <div class="card">text hier</div>#}
+{#            </div>#}
         </div>
     </div>
 

@@ -1,6 +1,6 @@
 # Django imports
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import UpdateView, DeleteView
 
 # Project imports
@@ -16,6 +16,7 @@ class ProductDishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView)
     model = ProductDish
     form_class = ProductDishForm
     template_name = "product_dish/update.html"
+    success_url = reverse_lazy('dish_list')
 
     def get_queryset(self):
         # We need to make sure that the user can only edit hos own objects.
