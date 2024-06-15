@@ -1,14 +1,17 @@
 # Django imports
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import View
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 
 # Project imports
 from django.conf import settings
-from ..models import MenuList, UserMenu, DishMenu
+from ..models import MenuList, UserMenu, DishMenu, Dish, ProductDish
 from ..forms import MenuForm
 from ..formsets import DishMenuFormSet
 
@@ -56,34 +59,72 @@ class MenuCreateView(CreateView):
             return self.render_to_response(self.get_context_data(form=form))
 
 
-class MenuUpdateView(LoginRequiredMixin, UpdateView):
+class MenuUpdateView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        menu = get_object_or_404(MenuList, pk=pk)
+        form = MenuForm(instance=menu)
+        formset = DishMenuFormSet(queryset=DishMenu.objects.filter(menu=menu))
+
+        context = {
+            'form': form,
+            'formset': formset,
+        }
+        return render(request, 'menu/update.html', context)
+
+    def post(self, request, pk):
+        menu = get_object_or_404(MenuList, pk=pk)
+        form = MenuForm(request.POST, instance=menu)
+        formset = DishMenuFormSet(request.POST, queryset=DishMenu.objects.filter(menu=menu))
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+
+            # Handle deletion of forms marked for deletion
+            for form in formset.deleted_forms:
+                if form.instance.pk:
+                    form.instance.delete()
+
+            return redirect('menu_list')
+
+
+class MenuDeleteView(LoginRequiredMixin, DeleteView):
 
     login_url = settings.LOGIN_URL
     model = MenuList
-    form_class = MenuForm
-    template_name = "menu/create.html"
     success_url = reverse_lazy("menu_list")
+    template_name = "menu/delete.html"
+
+
+class MenuDetailView(LoginRequiredMixin, DetailView):
+
+    login_url = settings.LOGIN_URL
+    model = MenuList
+    template_name = 'menu/detail.html'
+    context_object_name = 'menu'
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data()
-        if self.request.method == "POST":
-            data["dishes_formset"] = DishMenuFormSet(self.request.POST)
-        else:
-            data["dishes_formset"] = DishMenuFormSet(instance=self.object)
-        return data
+        context = super().get_context_data()
+        menu = self.get_object()
+        context['dishes'] = DishMenu.objects.filter(menu=menu)
+        return context
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        user = self.request.user
-        dishes_formset = context["dishes_formset"]
 
-        if all([form.is_valid(), dishes_formset.is_valid()]):
-            self.object = form.save()
+class AddToMenuView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        dish_id = request.POST.get("dish_id")
+        menu_id = request.POST.get("menu_id")
 
-            for dish_form in dishes_formset:
-                DishMenu.objects.update_or_create(
-                    menu=self.object, dish=dish_form.cleaned_data["dish"]
-                )
-            return redirect(self.get_success_url())
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+        dish = get_object_or_404(Dish, pk=dish_id)
+        menu = get_object_or_404(MenuList, pk=menu_id)
+
+        DishMenu.objects.create(menu=menu, dish=dish)
+        return redirect("dish_list")
+
+
+class RemoveFromMenuView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        dish_id = request.POST.get("dish_id")
+        menu_id = request.POST.get("menu_id")
+        dish = get_object_or_404(Dish, pk=dish_id)
+        menu = get_object_or_404(MenuList, pk=menu_id)
+        DishMenu.objects.filter(menu=menu, dish=dish).delete()

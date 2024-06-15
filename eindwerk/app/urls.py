@@ -59,5 +59,10 @@ urlpatterns = [
     # Menu
     path("menu/", MenuListView.as_view(), name="menu_list"),
     path("menu/create/", MenuCreateView.as_view(), name="menu_create"),
-    path("menu/<int:pk>/update", MenuUpdateView.as_view(), name="menu_update"),
+    # path("menu/<int:pk>/update", menu_update_view, name="menu_update"),
+    path("menu/<int:pk>/update/", MenuUpdateView.as_view(), name="menu_update"),
+    path("menu/<int:pk>/delete/", MenuDeleteView.as_view(), name="menu_delete"),
+    path("menu/<int:pk>/", MenuDetailView.as_view(), name="menu_detail"),
+    path('add_to_menu/', AddToMenuView.as_view(), name='add_to_menu'),
+    path("remove_from_menu/", RemoveFromMenuView.as_view(), name='remove_from_menu'),
 ]
