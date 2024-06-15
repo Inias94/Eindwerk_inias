@@ -8,7 +8,7 @@ class User(AbstractUser):
     """The user model inherits data from the auth0 user. Only name & email is used"""
 
     def __str__(self) -> str:
-        return f'{self.username}'
+        return f"{self.username}"
 
 
 class UserProduct(models.Model):
@@ -18,7 +18,8 @@ class UserProduct(models.Model):
 
     # Foreign keys
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey("Product", on_delete=models.CASCADE, unique=True)
+    # product = models.ForeignKey("Product", on_delete=models.CASCADE, unique=True)
+    product = models.OneToOneField("Product", on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.user} & {self.product}"
@@ -29,7 +30,8 @@ class UserDish(models.Model):
 
     # Foreign keys
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_dishes")
-    dish = models.ForeignKey("Dish", on_delete=models.CASCADE, unique=True)
+    # dish = models.ForeignKey("Dish", on_delete=models.CASCADE, unique=True)
+    dish = models.OneToOneField("Dish", on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.user} dish: {self.dish}"
@@ -43,7 +45,7 @@ class Product(models.Model):
     is_favorite = models.BooleanField(default=False, blank=True)
 
     def __str__(self) -> str:
-        return f'{self.name}'
+        return f"{self.name}"
 
 
 class Dish(models.Model):
@@ -54,10 +56,10 @@ class Dish(models.Model):
     is_favorite = models.BooleanField(default=False, blank=True)
 
     def __str__(self) -> str:
-        return f'{self.name}'
+        return f"{self.name}"
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
 
 class ProductDish(models.Model):
@@ -66,7 +68,9 @@ class ProductDish(models.Model):
     A product can have a certain amount of products in a dish.
     Example: amount=4, unit=kg"""
 
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
 
     # Foreign key
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
@@ -77,10 +81,11 @@ class ProductDish(models.Model):
         return f"{self.product} in {self.dish}"
 
     class Meta:
-        unique_together = ('product', 'dish')
+        unique_together = ("product", "dish")
         constraints = [
-            models.UniqueConstraint(fields=['product', 'dish'],
-                                    name='unique_product_dish')
+            models.UniqueConstraint(
+                fields=["product", "dish"], name="unique_product_dish"
+            )
         ]
 
 
@@ -91,7 +96,7 @@ class Unit(models.Model):
     abbreviation = models.CharField(max_length=15)
 
     def __str__(self) -> str:
-        return f'{self.name}'
+        return f"{self.name}"
 
 
 class ShoppingList(models.Model):
@@ -127,16 +132,32 @@ class ProductShoppingList(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f'{self.product}'
+        return f"{self.product}"
 
 
 # TODO: MenuLijst: Relatie tussen gerechten en winkellijst
 
-class MenuList(models.Model):
-    """This model represents a menu. The menu contains an amount of dishes linked to the user"""
 
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+class UserMenu(models.Model):
+    menu = models.ForeignKey("MenuList", on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'{self.dish}'
+        return f"{self.menu} from {self.user}"
+
+
+class DishMenu(models.Model):
+    menu = models.ForeignKey("MenuList", on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.menu} containing {self.dish}"
+
+
+class MenuList(models.Model):
+    """This model represents a menu. The menu contains an amount of dishes linked to the user"""
+
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
