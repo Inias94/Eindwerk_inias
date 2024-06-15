@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>Menu: {{ menu.name }}</h1>
+        <p><strong>Created by:</strong> {{ menu.user.username }}</p>
+        
+        <div class="row">
+            {% for dish_menu in dishes %}
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ dish_menu.dish.name }}</h3>
+                            <p class="card-text">{{ dish_menu.dish.recipe }}</p>
+                            <p><strong>Favorite:</strong> {{ dish_menu.dish.is_favorite|yesno:"Yes,No" }}</p>
+                            <h4>Ingredients:</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Quantity</th>
+                                        <th>Unit</th>
+                                        <th>Product</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product_dish in dish_menu.dish.productdish_set.all %}
+                                        <tr>
+                                            <td>{{ product_dish.quantity }}</td>
+                                            <td>{{ product_dish.unit.abbreviation }}</td>
+                                            <td>{{ product_dish.product.name }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{% url 'menu_list' %}" class="btn btn-secondary mt-3">Back to Menu List</a>
+    </div>
+{% endblock %}
