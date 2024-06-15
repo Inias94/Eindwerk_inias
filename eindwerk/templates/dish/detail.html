@@ -25,20 +25,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for dish, products in dish_products.items %}
-                    {% for product_dish in products %}
-                        <tr>
-                            <td>{{ product_dish.product.name }}</td>
-                            <td>{{ product_dish.quantity }}</td>
-                            <td>{{ product_dish.unit.abbreviation }}</td>
-                            <td class="text-end">
-                                <a class="btn btn-danger" href="{% url 'product_dish_delete' pk=product_dish.pk %}"><i
-                                        class="bi bi-trash"></i></a>
-                                <a class="btn btn-warning" href="{% url 'product_dish_update' pk=product_dish.pk %}"><i
-                                        class="bi bi-pencil-square"></i></a>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                {% for product_dish in dish_products %}
+                    <tr>
+                        <td>{{ product_dish.product.name }}</td>
+                        <td>{{ product_dish.quantity }}</td>
+                        <td>{{ product_dish.unit.abbreviation }}</td>
+                        <td class="text-end">
+                            <a class="btn btn-danger" href="{% url 'product_dish_delete' pk=product_dish.pk %}"><i class="bi bi-trash"></i></a>
+                            <a class="btn btn-warning" href="{% url 'product_dish_update' pk=product_dish.pk %}"><i class="bi bi-pencil-square"></i></a>
+                        </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>
