@@ -41,17 +41,13 @@ urlpatterns = [
     ),
     # Shoppinglist
     path("shoppinglist", ShoppingListListView.as_view(), name="shoppinglist"),
-    path(
-        "shoppinglist/create/",
-        ShoppingListCreateView.as_view(),
-        name="shoppinglist_create",
-    ),
-    path(
-        "shoppinglist/<int:pk>/update",
-        ShoppingListUpdateView.as_view(),
-        name="shoppinglist_update",
-    ),
-    # TODO Shoppinglist heeft nog nuttige functie!!
+    path("shoppinglist/<int:pk>/delete/", ShoppingListDeleteView.as_view(), name="shoppinglist_delete"),
+    # path(
+    #     "shoppinglist/create/",
+    #     ShoppingListCreateView.as_view(),
+    #     name="shoppinglist_create",
+    # ),
+
     # Unit
     path("unit/", UnitListView.as_view(), name="unit_list"),
     path("unit/create/", UnitCreateView.as_view(), name="unit_create"),

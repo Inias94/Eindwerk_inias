@@ -93,3 +93,10 @@ class DeleteItemFromShoppingListView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         shoppinglist = self.object.shoppinglist
         return reverse("shoppinglist_detail", kwargs={"pk": shoppinglist.pk})
+
+
+class AddItemToShoppingListView(LoginRequiredMixin, CreateView):
+    login_url = settings.LOGIN_URL
+    model = ProductShoppingList
+    context_object_name = "product_shoppinglist_product"
+    form_class = ProductShoppingListForm
