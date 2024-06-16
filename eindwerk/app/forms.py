@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ShoppingList, Product, ProductDish, Dish, Unit, MenuList, DishMenu
+from .models import ShoppingList, Product, ProductDish, Dish, Unit, MenuList, DishMenu, ProductShoppingList
 
 
 class ProductForm(forms.ModelForm):
@@ -39,7 +39,7 @@ class ProductDishForm(forms.ModelForm):
 
     class Meta:
         model = ProductDish
-        fields = ["quantity", "unit"]
+        fields = ["product_name","quantity", "unit", "product_is_favorite"]
         widgets = {
             "quantity": forms.NumberInput(
                 attrs={
@@ -156,3 +156,9 @@ class DishMenuForm(forms.ModelForm):
                 }
             ),
         }
+
+
+class ProductShoppingListForm(forms.ModelForm):
+    class Meta:
+        model = ProductShoppingList
+        fields = ['product_dish', 'quantity']

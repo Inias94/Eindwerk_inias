@@ -37,7 +37,8 @@
                 </div>
             {% endfor %}
         </div>
+        <a href="{% url 'create_shoppinglist_from_menu' menu.id %}" class="btn btn-primary">Create Shopping List</a>
 
-        <a href="{% url 'menu_list' %}" class="btn btn-secondary mt-3">Back to Menu List</a>
+        <a href="{% url 'menu_list' %}" class="btn btn-secondary mt-3">Terug naar menu lijst</a>
     </div>
 {% endblock %}
