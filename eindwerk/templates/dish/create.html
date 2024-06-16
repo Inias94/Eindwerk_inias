@@ -3,11 +3,11 @@
 
 {% block content %}
     <div class="container">
-    <h2>Create Dish</h2>
+    <h2>Maak een gerecht</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <h3>Products</h3>
+        <h3>Ingrediënten</h3>
         <div id="productdish_formset">
             {{ productdish_formset.management_form }}
             <div id="product-form-list">
@@ -18,12 +18,12 @@
                 {% endfor %}
             </div>
         </div>
-        <button type="button" class="btn btn-secondary" id="add-more">Add more</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" id="add-more">Meer toevoegen</button>
+        <button type="submit" class="btn btn-primary">Opslaan</button>
     </form>
 
     <template id="empty-form-template">
-        <div class="form-row product-form">
+        <div class="form-row product-form card opacity-75">
             {{ productdish_formset.empty_form.as_p }}
         </div>
         <hr>

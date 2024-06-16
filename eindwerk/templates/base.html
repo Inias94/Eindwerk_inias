@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Shoppinglist</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles.css' %}"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://unpkg.com/htmx.org@1.9.12"
@@ -15,7 +15,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="d-flex flex-column min-vh-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-<nav class="navbar navbar-expand-lg bg-body-tertiary mb-3 bg-dark" data-bs-theme="dark">
+<nav class="navbar navbar-expand-lg bg-body-tertiary mb-5 bg-dark" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'index' %}">MenuLijst</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
@@ -46,17 +46,13 @@
             </ul>
         </div>
         <ul class="navbar-nav d-flex pr-3">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false">Account</a>
-                <ul class="dropdown-menu">
-                    {% if user.is_authenticated %}
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a class="dropdown-item" href="/login/auth0">Login</a></li>
-                    {% endif %}
-                    {#                <li><a class="dropdown-item" href="#">Something else here</a></li>#}
-                </ul>
+            <li class="nav-item dropdown text-light">
+                {% if user.is_authenticated %}
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a class="dropdown-item" href="/login/auth0">Login</a>
+                {% endif %}
+        </ul>
     </div>
 </nav>
 <div class="container flex-grow-1 pb-5">
@@ -70,6 +66,7 @@
             <div class="card bg-dark border-secondary">
                 <p class="text-center text-light">Dit project is nog volop in ontwikkeling.</p>
             </div>
+            <small class="text-secondary">Photo's provided by Freepik</small>
         </div>
     </div>
 </footer>

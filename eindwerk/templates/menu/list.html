@@ -2,9 +2,11 @@
 
 {% block content %}
     <h3>Menu lijst</h3>
+    <p>Druk op deze knop om naar de gerechten pagina te gaan. <a class="btn btn-secondary" href="{% url 'dish_list' %}">Gerechten</a></p>
     <ul>
     {% for item in object_list %}
         <li>{{ item }} <a href="{% url 'menu_detail' pk=item.pk %}">Detail</a></li>
     {% endfor %}
     </ul>
+    
 {% endblock %}

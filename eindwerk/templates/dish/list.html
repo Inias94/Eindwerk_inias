@@ -5,7 +5,9 @@
         <h2>Gerechten van: {{ user.username }}</h2>
         <label for="searchInput">Zoek je iets specifiek?</label>
         <input type="text" id="searchInput" class="form-control mb-3" placeholder="Zoeken...">
-        <div><a href="{% url 'dish_create' %}">Voeg een gerecht toe aan je collectie</a></div>
+        <div class="mx-auto mr-2"><a class="btn btn-success ml-2"
+                                     href="{% url 'dish_create' %}"><i
+                class="bi bi-plus-lg">Voeg een gerecht toe aan je collectie</i></a></div>
         <hr>
         <div class="row">
             <div class="col">
@@ -18,7 +20,8 @@
                                         aria-controls="collapse{{ forloop.counter }}">
                                     <span class="col">{{ dish.name }}</span>
                                     <span class="col-auto px-2">
-                                        <a href="#" class="add-to-menu-btn" data-dish-id="{{ dish.id }}" data-bs-toggle="modal" data-bs-target="#addToMenuModal">
+                                        <a href="#" class="add-to-menu-btn" data-dish-id="{{ dish.id }}"
+                                           data-bs-toggle="modal" data-bs-target="#addToMenuModal">
                                             <i class="bi bi-cart-plus btn btn-success"></i>
                                         </a>
                                     </span>
@@ -37,24 +40,24 @@
                                     </div>
                                     <table class="table">
                                         <thead>
-                                            <tr>
-                                                <th>Product</th>
-                                                <th class="text-end">Hoeveelheid</th>
-                                                <th>Eenheid</th>
-                                            </tr>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th class="text-end">Hoeveelheid</th>
+                                            <th>Eenheid</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            {% for product_dish in products %}
-                                                <tr>
-                                                    <td>{{ product_dish.product.name }}</td>
-                                                    {% if product_dish.quantity is NULL %}
-                                                        <td class="text-end">/</td>
-                                                    {% else %}
-                                                        <td class="text-end">{{ product_dish.quantity }}</td>
-                                                    {% endif %}
-                                                    <td>{{ product_dish.unit.abbreviation }}</td>
-                                                </tr>
-                                            {% endfor %}
+                                        {% for product_dish in products %}
+                                            <tr>
+                                                <td>{{ product_dish.product.name }}</td>
+                                                {% if product_dish.quantity is NULL %}
+                                                    <td class="text-end">/</td>
+                                                {% else %}
+                                                    <td class="text-end">{{ product_dish.quantity }}</td>
+                                                {% endif %}
+                                                <td>{{ product_dish.unit.abbreviation }}</td>
+                                            </tr>
+                                        {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -63,9 +66,9 @@
                     {% endfor %}
                 </div>
             </div>
-{#            <div class="col-md-6">#}
-{#                <div class="card">text hier</div>#}
-{#            </div>#}
+            {#            <div class="col-md-6">#}
+            {#                <div class="card">text hier</div>#}
+            {#            </div>#}
         </div>
     </div>
 

@@ -1,25 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <div class="container" style="background-color: aliceblue; ">
-        <div style="margin: 20%;">
-            <h1>MyShopList</h1>
-            <div class="row">
-                <div class="col">
-                    <a href="">Go to Products</a>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-8 d-flex">
+                <div class="card border-light bg-light bg-opacity-25 shadow">
+                    <div class="card-body">
+                        <div class="card-title mb-5 mt-2">
+                            <h3 class="text-center">
+                                Welkom op ShopMyDish!
+                            </h3>
+                        </div>
+                        <div class="card-text">
+                            <p>In de hedendaagse, snelle maatschappij is efficiëntie in het dagelijks leven van groot
+                                belang. Dit geldt ook voor de dagelijkse gang naar de supermarkt. Boodschappen doen is
+                                vaak een tijdrovende klus, waarbij men worstelt met het combineren van recepten met de
+                                benodigde ingrediënten. ShopMyDish biedt een innovatieve oplossing voor dit
+                                probleem.</p>
+                            <p>
+                                ShopMyDish is een webapplicatie die de planning van maaltijden en het boodschappen doen
+                                automatiseert. Gebruikers selecteren eenvoudig de gerechten die ze willen eten, en
+                                ShopMyDish genereert automatisch een boodschappenlijst met alle benodigde ingrediënten.
+                                Dit elimineert de noodzaak om handmatig recepten te doorbladeren en ingrediëntenlijsten
+                                te kopiëren, waardoor tijd en frustratie worden bespaard.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            {% if user.is_authenticated %}
-                <h4>Welcome {{ user.username }}, you are logged in with
-                    email-address: {{ user.email }}</h4>
-            {% else %}
-                <h4>Welcome guest.</h4>
-            {% endif %}
-            <h2><a href="{% url 'shoppinglist' %}">Go to my shoppinglists!</a></h2>
-            <a href="{% url 'shoppinglist_create' %}">
-                <p>Create new shoppinglist</p>
-            </a>
-         
+        </div>
+        <div class="row d-flex justify-content-center mt-5">
+            <div class="col-8 d-flex">
+                <div class="card border-light bg-light bg-opacity-50 shadow">
+                    <div class="card-body">
+                        <div class="card-title mb-5 mt-2">
+                            <h4 class="text-center">
+                                Eerste stappen!
+                            </h4>
+                        </div>
+                        <div class="card-text">
+                            <h5>Stap 1. Menu</h5>
+                            <p>
+                                Om te starten maak je een "Menu" aan. Een Menu bevat de gerechten die jij die periode
+                                wil inkopen. Je geeft deze Menu een naam zodat het voor jou duidelijk is wat erin zit of
+                                het doel is. Dit kan een naam zijn, weeknummer, je bent hier compleet vrij in. Momenteel
+                                laten we deze Menu leeg omdat we toch nog geen gerechten hebben. Na het in geven van de
+                                naam druk je op "Opslaan" knop.
+                            </p>
+                            <div class="text-center mb-3">
+                                <a href="{% url 'menu_create' %}">
+                                    <button class="btn btn-warning">Maak een menu</button>
+                                </a>
+                            </div>
+                            <h5>Stap 2. Gerechten</h5>
+                            <p>
+                                Vanboven op de pagina vindt je de knop "+ Voeg een gerecht toe aan je collectie". Druk
+                                op deze knop (of je gaat naar home en drukt op onderstaande knop). Vervolgens geef je de
+                                titel/naam van het gerecht in, het recept. Het is aangeraden om regels over te slaan
+                                tussen instructies. Je kan dit gerecht ook toevoegen aan je favorieten.
+                                Bij producten druk je op "meer toevoegen", dit zal een extra veld maken om ingrediënten
+                                toe te voegen met hun hoeveelheid en maateenheid. Hier kan je zoveel ingrediënten
+                                toevoegen als je wenst.<br><small>Foutje gemaakt? geen probleem alles valt nog aan te
+                                passen!</small><br>
+                                Als alles is ingegeven druk je op opslaan, proficiat, je eerste gerecht dat je de
+                                laatste keer de ingrediënten voor moet opschrijven is gemaakt!
+                            </p>
+                            <div class="text-center mb-3">
+                                <a href="{% url 'dish_create' %}">
+                                    <button class="btn btn-warning">Maak een gerecht</button>
+                                </a>
+                            </div>
+                            <h5>Stap 3. Gerechten aan Menu toevoegen</h5>
+                            <p>
+                                Ga naar mijn gerechten, hier kan je u gerechten toevoegen aan je menu door op de groene
+                                knop te drukken in de titelbalk van het gerecht.
+                            </p>
+                            <div class="text-center mb-3">
+                                <a href="{% url 'dish_list' %}">
+                                    <button class="btn btn-warning">Gerechten</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
