@@ -1,0 +1,14 @@
+body {
+    background-image: url('abstract-blur-supermarket-retail-store.jpg');
+    background-repeat: repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.card:hover {
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+    background-color: #e0e0e0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+    border-color: #007bff;
+}
