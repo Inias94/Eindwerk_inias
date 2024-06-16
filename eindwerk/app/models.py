@@ -51,7 +51,7 @@ class Product(models.Model):
 class Dish(models.Model):
     """This model represents a Dish. It has a dish name and a recipe is_favorite is added here to."""
 
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     recipe = models.TextField()
     is_favorite = models.BooleanField(default=False, blank=True)
 
@@ -78,10 +78,9 @@ class ProductDish(models.Model):
     unit = models.ForeignKey("Unit", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"{self.product} in {self.dish}"
+        return f"{self.product}"
 
     class Meta:
-        unique_together = ("product", "dish")
         constraints = [
             models.UniqueConstraint(
                 fields=["product", "dish"], name="unique_product_dish"
@@ -114,28 +113,16 @@ class ShoppingList(models.Model):
 class ProductShoppingList(models.Model):
     """This model represents the relation of a product with/in a shoppinglist.
     A user will be able to add products to his shoppinglist this way."""
-
-    amount = models.PositiveBigIntegerField()
-
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
     # Foreign keys
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    unit = models.ForeignKey(Unit, on_delete=models.DO_NOTHING)
+    product_dish = models.ForeignKey(ProductDish, on_delete=models.DO_NOTHING)
     shoppinglist = models.ForeignKey(ShoppingList, on_delete=models.DO_NOTHING)
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, blank=True, null=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["product", "shoppinglist"],
-                name="unique_product_shoppinglist",
-            )
-        ]
 
     def __str__(self) -> str:
-        return f"{self.product}"
+        return f"{self.product_dish.product.name}"
 
-
-# TODO: MenuLijst: Relatie tussen gerechten en winkellijst
+    class Meta:
+        ordering = ["product_dish"]
 
 
 class UserMenu(models.Model):
