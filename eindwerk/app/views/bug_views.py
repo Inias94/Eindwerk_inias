@@ -20,8 +20,9 @@ class BugReportCreateView(LoginRequiredMixin, CreateView):
     Forms:
         - BugReportForm: This form is used to create a new BugReport object. It inherits from ModelForm.
 
-    Overridden functions:
-        - form_valid(): This function is overridden to assign the current user to the form.
+    Models manipulated:
+        - BugReport: BugReport
+
     """
 
     login_url = settings.LOGIN_URL
