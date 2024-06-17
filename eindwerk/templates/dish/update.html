@@ -11,9 +11,9 @@
             {{ productdish_formset.management_form }}
             <div id="product-form-list">
                 {% for form in productdish_formset %}
-                    <div class="form-row product-form">
+                    <div class="form-row product-form card p-3 mb-3">
                         {{ form.as_p }}
-                    <hr>
+                        <hr>
                     </div>
                 {% endfor %}
             </div>
@@ -23,9 +23,8 @@
     </form>
 
     <template id="empty-form-template">
-        <div class="form-row product-form">
+        <div class="form-row product-form card p-3 mb-3">
             {{ productdish_formset.empty_form.as_p }}
-            
         </div>
     </template>
 

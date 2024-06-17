@@ -72,40 +72,44 @@
         </div>
     </div>
 
-    <!-- Add to Menu Modal -->
-    <div class="modal fade" id="addToMenuModal" tabindex="-1" aria-labelledby="addToMenuModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addToMenuModalLabel">Voeg toe aan menu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="add-to-menu-form" method="POST" action="{% url 'add_to_menu' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="dish_id" id="dish_id">
-                        <div class="mb-3">
-                            <label for="menu_id" class="form-label">Selecteer Menu</label>
-                            <select class="form-select" name="menu_id" id="menu_id" required>
-                                {% for menu in menus %}
-                                    <option value="{{ menu.id }}">{{ menu.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Voeg toe aan menu</button>
-                    </form>
-                </div>
+<!-- Add to Menu Modal -->
+<div class="modal fade" id="addToMenuModal" tabindex="-1" aria-labelledby="addToMenuModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToMenuModalLabel">Voeg toe aan menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-to-menu-form" method="POST" action="{% url 'add_to_menu' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="dish_id" id="dish_id">
+                    <div class="mb-3">
+                        <label for="menu_id" class="form-label">Selecteer Menu</label>
+                        <select class="form-select" name="menu_id" id="menu_id" required>
+                            {% for menu in menus %}
+                                <option value="{{ menu.id }}">{{ menu.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Voeg toe aan menu</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.add-to-menu-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const dishId = this.getAttribute('data-dish-id');
                 document.getElementById('dish_id').value = dishId;
             });
         });
+    });
+</script>
+<script>
 
         document.getElementById('searchInput').addEventListener('keyup', function () {
             var input, filter, accordion, panel, i, txtValue;

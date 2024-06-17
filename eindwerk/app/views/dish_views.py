@@ -36,12 +36,10 @@ class DishListView(LoginRequiredMixin, ListView):
     template_name = "dish/list.html"
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        """Here we are making sure the view knows about the extra context variables. to be handeld in the view."""
-
         user = self.request.user
         # Query all dishes belonging to the current user.
         dishes = Dish.objects.filter(userdish__user=user)
-        # Get the context data from the parent view.
+        # Get the context data from the parent (List)View and adds more objects to it.
         context = super().get_context_data(object_list=object_list, **kwargs)
 
         # Create a dictionary to store dishes and their associated products.
@@ -64,8 +62,20 @@ class DishListView(LoginRequiredMixin, ListView):
 
 
 class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
-    """This view makes it possible to look to a dish in detail.
-    It will only show dishes that are related to the user."""
+    """
+    This view allows users to view a dish in detail.
+    Only dishes related to the user will be displayed.
+
+    Attributes:
+        login_url (str): The URL to redirect users who are not logged in.
+        model (Model): The model class representing the dish.
+        template_name (str): The name of the template to render.
+
+    Methods:
+        get_context_data(**kwargs): Returns a dictionary containing the context data for the view.
+            This includes the current dish and its associated product dishes.
+
+    """
 
     login_url = settings.LOGIN_URL
     model = Dish
@@ -80,7 +90,11 @@ class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
         dish_products = ProductDish.objects.filter(dish=dish).select_related(
             "product", "unit"
         )
+
+        menus = MenuList.objects.filter(usermenu__user=self.request.user)
+        context["menus"] = menus
         context["dish_products"] = dish_products
+
         return context
 
 
@@ -119,6 +133,8 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
 
             # Save the Dish first
             dish = form.save()
+            # Create the UserDish object for establishing the relation between the user and the dish.
+            UserDish.objects.get_or_create(user=user, dish=dish)
 
             # Iterate over the productdish_formset and save each ProductDish object
             for productdish_form in productdish_formset:
@@ -128,22 +144,21 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
                     "product_is_favorite"
                 )
 
-                # Create or get the Product with the data from above.
-                product, created = Product.objects.get_or_create(
-                    name=product_name, defaults={"is_favorite": product_is_favorite}
-                )
+                if product_name is not None:
+                    # Create or get the Product with the data from above.
+                    product, created = Product.objects.get_or_create(
+                        name=product_name, defaults={"is_favorite": product_is_favorite}
+                    )
 
-                # Create the ProductDish object
-                ProductDish.objects.get_or_create(
-                    dish=dish,
-                    product=product,
-                    quantity=productdish_form.cleaned_data.get("quantity"),
-                    unit=productdish_form.cleaned_data.get("unit"),
-                )
-                # Create the UserProduct object
-                UserProduct.objects.get_or_create(user=user, product=product)
-            # Create the UserDish object for establishing the relation between the user and the dish.
-            UserDish.objects.get_or_create(user=user, dish=dish)
+                    # Create the ProductDish object
+                    ProductDish.objects.get_or_create(
+                        dish=dish,
+                        product=product,
+                        quantity=productdish_form.cleaned_data.get("quantity"),
+                        unit=productdish_form.cleaned_data.get("unit"),
+                    )
+                    # Create the UserProduct object
+                    UserProduct.objects.get_or_create(user=user, product=product)
 
             return redirect(self.get_success_url())
         else:
@@ -169,10 +184,7 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
     success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
-        """Here we are making sure the view knows about the extra context variables. to be handeld in the view.
-        Because of the ProductDishForm inherits from django modelForm, we need to add 2 extra form.fields to the view.
-        for the creation of the product."""
-
+        """Add extra context variables to the view."""
         data = super().get_context_data(**kwargs)
         if self.request.method == "POST":
             data["productdish_formset"] = ProductDishFormSet(
@@ -182,13 +194,17 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
             data["productdish_formset"] = ProductDishFormSet(instance=self.object)
             for form in data["productdish_formset"]:
                 product_dish = form.instance
-                product = product_dish.product
-                form.fields["product_name"].initial = product.name
-                form.fields["product_is_favorite"].initial = product.is_favorite
+                try:
+                    product = product_dish.product
+                    form.fields["product_name"].initial = product.name
+                    form.fields["product_is_favorite"].initial = product.is_favorite
+                except Product.DoesNotExist:
+                    form.fields["product_name"].initial = ""
+                    form.fields["product_is_favorite"].initial = False
         return data
 
     def form_valid(self, form):
-        # TODO: Add a docstring with info
+        """Handle form validation and saving logic."""
         context = self.get_context_data()
         user = self.request.user
         productdish_formset = context["productdish_formset"]
