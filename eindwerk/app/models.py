@@ -116,7 +116,7 @@ class ProductShoppingList(models.Model):
 
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     # Foreign keys
-    product_dish = models.ForeignKey(ProductDish, on_delete=models.DO_NOTHING)
+    product_dish = models.ForeignKey(ProductDish, on_delete=models.CASCADE)
     shoppinglist = models.ForeignKey(ShoppingList, on_delete=models.DO_NOTHING)
 
     def __str__(self) -> str:

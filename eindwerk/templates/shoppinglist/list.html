@@ -3,6 +3,6 @@
 {% block content %}
     <h1>Shoppinglists</h1>
     {% for list in object_list %}
-    <li><a href="{% url 'shoppinglist_update' pk=list.pk %}">{{ list }}</a></li>
+    <li><a href="{% url 'shoppinglist_detail' pk=list.pk %}">{{ list }}</a></li>
     {% endfor %}
 {% endblock content %}

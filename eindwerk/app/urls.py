@@ -77,7 +77,7 @@ urlpatterns = [
         name="shoppinglist_detail",
     ),
     path(
-        "shoplist//<int:pk>/update",
+        "shoplist/<int:pk>/update",
         UpdateItemFromShoppingListView.as_view(),
         name="update_product_shoppinglist",
     ),

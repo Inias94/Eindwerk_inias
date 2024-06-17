@@ -211,7 +211,8 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
 
         if form.is_valid() and productdish_formset.is_valid():
             self.object = form.save()
-            dish = form.save()
+            dish = self.object
+            UserDish.objects.get_or_create(user=user, dish=dish)
 
             for productdish_form in productdish_formset:
                 if productdish_form.cleaned_data.get("DELETE"):
@@ -224,24 +225,24 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
                 )
                 quantity = productdish_form.cleaned_data.get("quantity")
                 unit = productdish_form.cleaned_data.get("unit")
+                if product_name is not None:
 
-                product, created = Product.objects.get_or_create(
-                    name=product_name, defaults={"is_favorite": product_is_favorite}
-                )
+                    product, created = Product.objects.get_or_create(
+                        name=product_name, defaults={"is_favorite": product_is_favorite}
+                    )
 
-                ProductDish.objects.update_or_create(
-                    id=productdish_form.instance.id,
-                    defaults={
-                        "dish": dish,
-                        "product": product,
-                        "quantity": quantity,
-                        "unit": unit,
-                    },
-                )
+                    ProductDish.objects.update_or_create(
+                        id=productdish_form.instance.id,
+                        defaults={
+                            "dish": dish,
+                            "product": product,
+                            "quantity": quantity,
+                            "unit": unit,
+                        },
+                    )
 
-                UserProduct.objects.get_or_create(user=user, product=product)
+                    UserProduct.objects.get_or_create(user=user, product=product)
 
-            UserDish.objects.get_or_create(user=user, dish=dish)
 
             return redirect(self.get_success_url())
         else:
