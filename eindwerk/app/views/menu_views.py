@@ -69,15 +69,17 @@ class MenuUpdateView(LoginRequiredMixin, View):
         formset = DishMenuFormSet(queryset=DishMenu.objects.filter(menu=menu))
 
         context = {
-            'form': form,
-            'formset': formset,
+            "form": form,
+            "formset": formset,
         }
-        return render(request, 'menu/update.html', context)
+        return render(request, "menu/update.html", context)
 
     def post(self, request, pk):
         menu = get_object_or_404(MenuList, pk=pk)
         form = MenuForm(request.POST, instance=menu)
-        formset = DishMenuFormSet(request.POST, queryset=DishMenu.objects.filter(menu=menu))
+        formset = DishMenuFormSet(
+            request.POST, queryset=DishMenu.objects.filter(menu=menu)
+        )
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
@@ -87,7 +89,7 @@ class MenuUpdateView(LoginRequiredMixin, View):
                 if form.instance.pk:
                     form.instance.delete()
 
-            return redirect('menu_list')
+            return redirect("menu_list")
 
 
 class MenuDeleteView(LoginRequiredMixin, DeleteView):
@@ -97,19 +99,25 @@ class MenuDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("menu_list")
     template_name = "menu/delete.html"
 
+    def get_queryset(self, **kwargs):
+        return MenuList.objects.filter(usermenu__user=self.request.user)
+
 
 class MenuDetailView(LoginRequiredMixin, DetailView):
 
     login_url = settings.LOGIN_URL
     model = MenuList
-    template_name = 'menu/detail.html'
-    context_object_name = 'menu'
+    template_name = "menu/detail.html"
+    context_object_name = "menu"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         menu = self.get_object()
-        context['dishes'] = DishMenu.objects.filter(menu=menu)
+        context["dishes"] = DishMenu.objects.filter(menu=menu)
         return context
+
+    def get_queryset(self):
+        return MenuList.objects.filter(usermenu__user=self.request.user)
 
 
 class AddToMenuView(LoginRequiredMixin, View):
@@ -122,7 +130,6 @@ class AddToMenuView(LoginRequiredMixin, View):
 
         DishMenu.objects.create(menu=menu, dish=dish)
         return redirect("dish_list")
-
 
 
 class RemoveFromMenuView(LoginRequiredMixin, View):
