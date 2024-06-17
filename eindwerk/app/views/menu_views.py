@@ -23,6 +23,9 @@ class MenuListView(LoginRequiredMixin, ListView):
     model = MenuList
     template_name = "menu/list.html"
 
+    def get_queryset(self, **kwargs):
+        return MenuList.objects.filter(usermenu__user=self.request.user)
+
 
 class MenuCreateView(CreateView):
     model = MenuList
@@ -114,11 +117,12 @@ class AddToMenuView(LoginRequiredMixin, View):
         dish_id = request.POST.get("dish_id")
         menu_id = request.POST.get("menu_id")
 
-        dish = get_object_or_404(Dish, pk=dish_id)
-        menu = get_object_or_404(MenuList, pk=menu_id)
+        dish = get_object_or_404(Dish, pk=dish_id, userdish__user=self.request.user)
+        menu = get_object_or_404(MenuList, pk=menu_id, usermenu__user=self.request.user)
 
         DishMenu.objects.create(menu=menu, dish=dish)
         return redirect("dish_list")
+
 
 
 class RemoveFromMenuView(LoginRequiredMixin, View):
