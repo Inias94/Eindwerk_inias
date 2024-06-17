@@ -10,6 +10,19 @@ from ..models import BugReport
 
 
 class BugReportCreateView(LoginRequiredMixin, CreateView):
+    """
+    This view allows users to create bug reports. Only the admin can review these reports.
+     Superusers must log in to the admin panel to access this functionality.
+
+    Relations:
+        - User and BugReport: The BugReport model is associated with the User model.
+
+    Forms:
+        - BugReportForm: This form is used to create a new BugReport object. It inherits from ModelForm.
+
+    Overridden functions:
+        - form_valid(): This function is overridden to assign the current user to the form.
+    """
 
     login_url = settings.LOGIN_URL
     Model = BugReport

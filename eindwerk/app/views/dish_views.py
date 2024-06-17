@@ -20,24 +20,37 @@ from ..formsets import ProductDishFormSet
 
 
 class DishListView(LoginRequiredMixin, ListView):
-    """This view will show you a list of all the users dishes. Including the recipe and the products in it."""
+    """
+    This view displays a list of all the user's dishes along with their corresponding recipes and products.
+
+    The view requires the user to be logged in. Only the dishes belonging to the current user are displayed.
+
+    The context data for the view includes:
+        - dish_products: A dictionary mapping each dish to its associated products.
+        - menus: A queryset of all menus belonging to the current user.
+        - user: The current user.
+    """
 
     login_url = settings.LOGIN_URL
     model = Dish
     template_name = "dish/list.html"
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        # Get the current user.
+        """Here we are making sure the view knows about the extra context variables. to be handeld in the view."""
+
         user = self.request.user
         # Query all dishes belonging to the current user.
         dishes = Dish.objects.filter(userdish__user=user)
+        # Get the context data from the parent view.
         context = super().get_context_data(object_list=object_list, **kwargs)
 
         # Create a dictionary to store dishes and their associated products.
         dish_products = {}
         for dish in dishes:
             # Query all products associated with the current dish.
-            products = ProductDish.objects.filter(dish=dish).select_related("product", "unit")
+            products = ProductDish.objects.filter(dish=dish).select_related(
+                "product", "unit"
+            )
             dish_products[dish] = products
 
         # Query all menus belonging to the current user.
