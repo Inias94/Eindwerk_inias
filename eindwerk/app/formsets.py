@@ -7,7 +7,7 @@ from .forms import ProductDishForm, DishMenuForm
 
 # Formset for creating multiple products while creating a Dish.
 ProductDishFormSet = inlineformset_factory(
-    Dish, ProductDish, form=ProductDishForm, can_delete=True, extra=0
+    Dish, ProductDish, form=ProductDishForm, can_delete=True, extra=1
 )
 
 # Formset for creating a menu with multiple dishes.
