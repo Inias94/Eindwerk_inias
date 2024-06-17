@@ -36,12 +36,10 @@ class DishListView(LoginRequiredMixin, ListView):
     template_name = "dish/list.html"
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        """Here we are making sure the view knows about the extra context variables. to be handeld in the view."""
-
         user = self.request.user
         # Query all dishes belonging to the current user.
         dishes = Dish.objects.filter(userdish__user=user)
-        # Get the context data from the parent view.
+        # Get the context data from the parent (List)View and adds more objects to it.
         context = super().get_context_data(object_list=object_list, **kwargs)
 
         # Create a dictionary to store dishes and their associated products.
@@ -64,8 +62,20 @@ class DishListView(LoginRequiredMixin, ListView):
 
 
 class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
-    """This view makes it possible to look to a dish in detail.
-    It will only show dishes that are related to the user."""
+    """
+    This view allows users to view a dish in detail.
+    Only dishes related to the user will be displayed.
+
+    Attributes:
+        login_url (str): The URL to redirect users who are not logged in.
+        model (Model): The model class representing the dish.
+        template_name (str): The name of the template to render.
+
+    Methods:
+        get_context_data(**kwargs): Returns a dictionary containing the context data for the view.
+            This includes the current dish and its associated product dishes.
+
+    """
 
     login_url = settings.LOGIN_URL
     model = Dish
