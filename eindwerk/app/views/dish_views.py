@@ -20,8 +20,7 @@ from ..formsets import ProductDishFormSet
 
 
 class DishListView(LoginRequiredMixin, ListView):
-    """
-    This view displays a list of all the user's dishes along with their corresponding recipes and products.
+    """This view displays a list of all the user's dishes along with their corresponding recipes and products.
 
     The view requires the user to be logged in. Only the dishes belonging to the current user are displayed.
 
@@ -62,9 +61,7 @@ class DishListView(LoginRequiredMixin, ListView):
 
 
 class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
-    """
-    This view allows users to view a dish in detail.
-    Only dishes related to the user will be displayed.
+    """This view allows users to view a dish in detail. Only dishes related to the user will be displayed.
 
     Attributes:
         login_url (str): The URL to redirect users who are not logged in.
@@ -205,7 +202,6 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
         return data
 
     def form_valid(self, form):
-        """Handle form validation and saving logic."""
         context = self.get_context_data()
         user = self.request.user
         productdish_formset = context["productdish_formset"]
@@ -250,6 +246,9 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
 
 
 class DishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
+    """This view is to delete a Dish and its related ProductDish objects. Because im handeling more than the Dish model
+    I have to overwrite the delete() function from the parent DeleteView class."""
+
     login_url = settings.LOGIN_URL
     template_name = "dish/delete.html"
     model = Dish
