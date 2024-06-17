@@ -1,6 +1,16 @@
 from django import forms
 
-from .models import ShoppingList, Product, ProductDish, Dish, Unit, MenuList, DishMenu, ProductShoppingList
+from .models import (
+    ShoppingList,
+    Product,
+    ProductDish,
+    Dish,
+    Unit,
+    MenuList,
+    DishMenu,
+    ProductShoppingList,
+    BugReport,
+)
 
 
 class ProductForm(forms.ModelForm):
@@ -10,20 +20,20 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ["name", "is_favorite"]
         labels = {
-            "name": "Product name",
-            "is_favorite": "Favorite?",
+            "name": "Product naam",
+            "is_favorite": "Favoriet",
         }
         widgets = {
             "name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Product name",
+                    "placeholder": "Product naam",
                 }
             ),
             "is_favorite": forms.CheckboxInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Favorite?",
+                    "placeholder": "Favoriet",
                 }
             ),
         }
@@ -32,25 +42,23 @@ class ProductForm(forms.ModelForm):
 class ProductDishForm(forms.ModelForm):
     """Form for linking products to a dish with a certain amount and unit."""
 
-    product_name = forms.CharField(max_length=100, required=True, label="Product Name")
-    product_is_favorite = forms.BooleanField(
-        required=False, label="Product is Favorite"
-    )
+    product_name = forms.CharField(max_length=100, required=True, label="Product naam")
+    product_is_favorite = forms.BooleanField(required=False, label="Favoriet")
 
     class Meta:
         model = ProductDish
-        fields = ["product_name","quantity", "unit", "product_is_favorite"]
+        fields = ["product_name", "quantity", "unit", "product_is_favorite"]
         widgets = {
             "quantity": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Amount",
+                    "placeholder": "Hoeveelheid",
                 }
             ),
             "unit": forms.Select(
                 attrs={
                     "class": "form-select",
-                    "placeholder": "Unit",
+                    "placeholder": "Maateenheid",
                 }
             ),
         }
@@ -58,7 +66,7 @@ class ProductDishForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProductDishForm, self).__init__(*args, **kwargs)
         self.fields["product_name"].widget.attrs.update(
-            {"class": "form-control", "placeholder": "Product Name"}
+            {"class": "form-control", "placeholder": "Product naam"}
         )
         self.fields["product_is_favorite"].widget.attrs.update(
             {"class": "form-check-input"}
@@ -72,27 +80,27 @@ class DishForm(forms.ModelForm):
         model = Dish
         fields = ["name", "recipe", "is_favorite"]
         labels = {
-            "name": "Dish name",
-            "is_favorite": "Favorite?",
-            "recipe": "Recipe",
+            "name": "Gerecht",
+            "is_favorite": "Favoriet",
+            "recipe": "Recept",
         }
         widgets = {
             "name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Dish name",
+                    "placeholder": "Gerecht",
                 }
             ),
             "recipe": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Recipe",
+                    "placeholder": "Recept",
                 }
             ),
             "is_favorite": forms.CheckboxInput(
                 attrs={
                     "class": "form-check-input",
-                    "placeholder": "Favorite?",
+                    "placeholder": "Favoriet",
                 }
             ),
         }
@@ -111,20 +119,20 @@ class UnitForm(forms.ModelForm):
         model = Unit
         fields = ["name", "abbreviation"]
         labels = {
-            "name": "Unit name",
-            "abbreviation": "Unit abbreviation",
+            "name": "Maateenheid",
+            "abbreviation": "Afkorting van de eenheid",
         }
         widgets = {
             "name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Unit name",
+                    "placeholder": "Maateenheid naam",
                 }
             ),
             "abbreviation": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Unit abbreviation",
+                    "placeholder": "Afkorting van de maateenheid",
                 }
             ),
         }
@@ -161,4 +169,26 @@ class DishMenuForm(forms.ModelForm):
 class ProductShoppingListForm(forms.ModelForm):
     class Meta:
         model = ProductShoppingList
-        fields = ['product_dish', 'quantity']
+        fields = ["quantity"]
+        labels = {"quantity": "Hoeveelheid"}
+
+
+class BugReportForm(forms.ModelForm):
+    class Meta:
+        model = BugReport
+        fields = ["title", "description"]
+        widgets = {
+            "title": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Titel van een het probleem",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Beschrijving van het probleem",
+                }
+            ),
+        }
+        labels = {"title": "Bug-titel", "description": "Bug-description"}

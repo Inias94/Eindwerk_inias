@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .views.bug_views import *
 from .views.dish_views import *
 from .views.index_views import *
 from .views.menu_views import *
@@ -41,13 +42,16 @@ urlpatterns = [
     ),
     # Shoppinglist
     path("shoppinglist", ShoppingListListView.as_view(), name="shoppinglist"),
-    path("shoppinglist/<int:pk>/delete/", ShoppingListDeleteView.as_view(), name="shoppinglist_delete"),
+    path(
+        "shoppinglist/<int:pk>/delete/",
+        ShoppingListDeleteView.as_view(),
+        name="shoppinglist_delete",
+    ),
     # path(
     #     "shoppinglist/create/",
     #     ShoppingListCreateView.as_view(),
     #     name="shoppinglist_create",
     # ),
-
     # Unit
     path("unit/", UnitListView.as_view(), name="unit_list"),
     path("unit/create/", UnitCreateView.as_view(), name="unit_create"),
@@ -72,7 +76,16 @@ urlpatterns = [
         ShoppingListDetailView.as_view(),
         name="shoppinglist_detail",
     ),
-    path('shoplist//<int:pk>/update', UpdateItemFromShoppingListView.as_view(), name='update_product_shoppinglist'),
-    path('shoplist/<int:pk>/delete', DeleteItemFromShoppingListView.as_view(), name='delete_product_shoppinglist'),
-
+    path(
+        "shoplist//<int:pk>/update",
+        UpdateItemFromShoppingListView.as_view(),
+        name="update_product_shoppinglist",
+    ),
+    path(
+        "shoplist/<int:pk>/delete",
+        DeleteItemFromShoppingListView.as_view(),
+        name="delete_product_shoppinglist",
+    ),
+    # Bug Report
+    path("bug_report/create/", BugReportCreateView.as_view(), name="bug_report_create"),
 ]

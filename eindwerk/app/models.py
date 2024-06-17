@@ -113,6 +113,7 @@ class ShoppingList(models.Model):
 class ProductShoppingList(models.Model):
     """This model represents the relation of a product with/in a shoppinglist.
     A user will be able to add products to his shoppinglist this way."""
+
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     # Foreign keys
     product_dish = models.ForeignKey(ProductDish, on_delete=models.DO_NOTHING)
@@ -148,3 +149,14 @@ class MenuList(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+
+class BugReport(models.Model):
+    """This is so that users can report bug's only the developer will be able to see this."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+
+    def __str__(self) -> str:
+        return f"{self.title}"

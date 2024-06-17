@@ -4,8 +4,8 @@ INSERT INTO unit (name, abbreviation) VALUES
   ('Liter', 'l'),
   ('Kilogram', 'kg'),  -- Added kilogram
   ('Centiliter', 'cl'),  -- Added centiliter
-  ('Eetlepel', 'EL'),
-  ('Theelepel', 'TL'),
+  ('Eetlepel', 'el'),
+  ('Theelepel', 'tl'),
   ('Mespunt', 'mpt'),
   ('Kop', 'kop'),
   ('Stuk', 'st'),
