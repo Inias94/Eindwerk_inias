@@ -179,26 +179,25 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
     success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
-        """Here we are making sure the view knows about the extra context variables. to be handeld in the view.
-        Because of the ProductDishForm inherits from django modelForm, we need to add 2 extra form.fields to the view.
-        for the creation of the product."""
-
+        """Add extra context variables to the view."""
         data = super().get_context_data(**kwargs)
         if self.request.method == "POST":
-            data["productdish_formset"] = ProductDishFormSet(
-                self.request.POST, instance=self.object
-            )
+            data["productdish_formset"] = ProductDishFormSet(self.request.POST, instance=self.object)
         else:
             data["productdish_formset"] = ProductDishFormSet(instance=self.object)
             for form in data["productdish_formset"]:
                 product_dish = form.instance
-                product = product_dish.product
-                form.fields["product_name"].initial = product.name
-                form.fields["product_is_favorite"].initial = product.is_favorite
+                try:
+                    product = product_dish.product
+                    form.fields["product_name"].initial = product.name
+                    form.fields["product_is_favorite"].initial = product.is_favorite
+                except Product.DoesNotExist:
+                    form.fields["product_name"].initial = ""
+                    form.fields["product_is_favorite"].initial = False
         return data
 
     def form_valid(self, form):
-        # TODO: Add a docstring with info
+        """Handle form validation and saving logic."""
         context = self.get_context_data()
         user = self.request.user
         productdish_formset = context["productdish_formset"]
@@ -213,9 +212,7 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
                     continue
 
                 product_name = productdish_form.cleaned_data.get("product_name")
-                product_is_favorite = productdish_form.cleaned_data.get(
-                    "product_is_favorite"
-                )
+                product_is_favorite = productdish_form.cleaned_data.get("product_is_favorite")
                 quantity = productdish_form.cleaned_data.get("quantity")
                 unit = productdish_form.cleaned_data.get("unit")
 

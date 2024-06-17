@@ -13,7 +13,7 @@
                 {% for form in productdish_formset %}
                     <div class="form-row product-form">
                         {{ form.as_p }}
-                    <hr>
+                        <hr>
                     </div>
                 {% endfor %}
             </div>
@@ -25,7 +25,6 @@
     <template id="empty-form-template">
         <div class="form-row product-form">
             {{ productdish_formset.empty_form.as_p }}
-            
         </div>
     </template>
 
