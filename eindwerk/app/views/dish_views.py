@@ -90,7 +90,11 @@ class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
         dish_products = ProductDish.objects.filter(dish=dish).select_related(
             "product", "unit"
         )
+
+        menus = MenuList.objects.filter(usermenu__user=self.request.user)
+        context["menus"] = menus
         context["dish_products"] = dish_products
+
         return context
 
 
@@ -129,6 +133,8 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
 
             # Save the Dish first
             dish = form.save()
+            # Create the UserDish object for establishing the relation between the user and the dish.
+            UserDish.objects.get_or_create(user=user, dish=dish)
 
             # Iterate over the productdish_formset and save each ProductDish object
             for productdish_form in productdish_formset:
@@ -138,22 +144,21 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
                     "product_is_favorite"
                 )
 
-                # Create or get the Product with the data from above.
-                product, created = Product.objects.get_or_create(
-                    name=product_name, defaults={"is_favorite": product_is_favorite}
-                )
+                if product_name is not None:
+                    # Create or get the Product with the data from above.
+                    product, created = Product.objects.get_or_create(
+                        name=product_name, defaults={"is_favorite": product_is_favorite}
+                    )
 
-                # Create the ProductDish object
-                ProductDish.objects.get_or_create(
-                    dish=dish,
-                    product=product,
-                    quantity=productdish_form.cleaned_data.get("quantity"),
-                    unit=productdish_form.cleaned_data.get("unit"),
-                )
-                # Create the UserProduct object
-                UserProduct.objects.get_or_create(user=user, product=product)
-            # Create the UserDish object for establishing the relation between the user and the dish.
-            UserDish.objects.get_or_create(user=user, dish=dish)
+                    # Create the ProductDish object
+                    ProductDish.objects.get_or_create(
+                        dish=dish,
+                        product=product,
+                        quantity=productdish_form.cleaned_data.get("quantity"),
+                        unit=productdish_form.cleaned_data.get("unit"),
+                    )
+                    # Create the UserProduct object
+                    UserProduct.objects.get_or_create(user=user, product=product)
 
             return redirect(self.get_success_url())
         else:
@@ -182,7 +187,9 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
         """Add extra context variables to the view."""
         data = super().get_context_data(**kwargs)
         if self.request.method == "POST":
-            data["productdish_formset"] = ProductDishFormSet(self.request.POST, instance=self.object)
+            data["productdish_formset"] = ProductDishFormSet(
+                self.request.POST, instance=self.object
+            )
         else:
             data["productdish_formset"] = ProductDishFormSet(instance=self.object)
             for form in data["productdish_formset"]:
@@ -212,7 +219,9 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
                     continue
 
                 product_name = productdish_form.cleaned_data.get("product_name")
-                product_is_favorite = productdish_form.cleaned_data.get("product_is_favorite")
+                product_is_favorite = productdish_form.cleaned_data.get(
+                    "product_is_favorite"
+                )
                 quantity = productdish_form.cleaned_data.get("quantity")
                 unit = productdish_form.cleaned_data.get("unit")
 
