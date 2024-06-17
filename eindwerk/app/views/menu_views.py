@@ -17,7 +17,12 @@ from ..formsets import DishMenuFormSet
 
 
 class MenuListView(LoginRequiredMixin, ListView):
-    """This view lists your items in your menu."""
+    """This view lists your items in the menu related to the user.
+
+    Models manipulated:
+        - MenuList
+        - UserMenu
+    """
 
     login_url = settings.LOGIN_URL
     model = MenuList
@@ -28,6 +33,18 @@ class MenuListView(LoginRequiredMixin, ListView):
 
 
 class MenuCreateView(CreateView):
+    """This view makes it possible to create menu related to the user. A menu can be named anything.
+    The user can add dishes to his menu upon creation, although this is not required.
+
+    Models manipulated:
+        - MenuList
+        - UserMenu
+
+    Forms used:
+        - MenuForm
+        - DishMenuFormSet
+
+    """
     model = MenuList
     form_class = MenuForm
     template_name = "menu/create.html"
@@ -38,6 +55,7 @@ class MenuCreateView(CreateView):
         if self.request.method == "POST":
             data["dishes_formset"] = DishMenuFormSet(self.request.POST)
         else:
+            # We have to explicit state that the queryset does not want to display Dishmenu objects. Else all are shown.
             data["dishes_formset"] = DishMenuFormSet(queryset=DishMenu.objects.none())
 
         return data
@@ -63,7 +81,19 @@ class MenuCreateView(CreateView):
 
 
 class MenuUpdateView(LoginRequiredMixin, View):
+    """This view makes it possible to update a menu, changing the name, and the dishes within.
+
+    Models manipulated:
+        - DishMenu
+        - MenuList
+
+    Forms used:
+        - MenuForm
+        - DishMenuFormset
+    """
+
     def get(self, request, pk):
+        login_url = settings.LOGIN_URL
         menu = get_object_or_404(MenuList, pk=pk)
         form = MenuForm(instance=menu)
         formset = DishMenuFormSet(queryset=DishMenu.objects.filter(menu=menu))
@@ -75,6 +105,7 @@ class MenuUpdateView(LoginRequiredMixin, View):
         return render(request, "menu/update.html", context)
 
     def post(self, request, pk):
+        login_url = settings.LOGIN_URL
         menu = get_object_or_404(MenuList, pk=pk)
         form = MenuForm(request.POST, instance=menu)
         formset = DishMenuFormSet(
@@ -93,6 +124,11 @@ class MenuUpdateView(LoginRequiredMixin, View):
 
 
 class MenuDeleteView(LoginRequiredMixin, DeleteView):
+    """This view deletes a menu related to the user.
+
+    Models manipulated:
+    - MenuList
+    """
 
     login_url = settings.LOGIN_URL
     model = MenuList
@@ -104,6 +140,12 @@ class MenuDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class MenuDetailView(LoginRequiredMixin, DetailView):
+    """This view displays all details of the menu related to the user.
+
+    Models manipulated:
+    - MenuList
+    - DishMenu
+    """
 
     login_url = settings.LOGIN_URL
     model = MenuList
@@ -121,6 +163,8 @@ class MenuDetailView(LoginRequiredMixin, DetailView):
 
 
 class AddToMenuView(LoginRequiredMixin, View):
+    """This view lets the user add a dish to the menu."""
+
     def post(self, request, *args, **kwargs):
         dish_id = request.POST.get("dish_id")
         menu_id = request.POST.get("menu_id")
@@ -133,6 +177,8 @@ class AddToMenuView(LoginRequiredMixin, View):
 
 
 class RemoveFromMenuView(LoginRequiredMixin, View):
+    """This view lets the user remove a dish from the menu."""
+
     def post(self, request, *args, **kwargs):
         dish_id = request.POST.get("dish_id")
         menu_id = request.POST.get("menu_id")
