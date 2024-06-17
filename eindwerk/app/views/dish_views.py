@@ -132,7 +132,8 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
             self.object = form.save()
 
             # Save the Dish first
-            dish = form.save()
+            dish = self.object
+            print(dish)
             # Create the UserDish object for establishing the relation between the user and the dish.
             UserDish.objects.get_or_create(user=user, dish=dish)
 
@@ -211,7 +212,8 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
 
         if form.is_valid() and productdish_formset.is_valid():
             self.object = form.save()
-            dish = form.save()
+            dish = self.object
+            UserDish.objects.get_or_create(user=user, dish=dish)
 
             for productdish_form in productdish_formset:
                 if productdish_form.cleaned_data.get("DELETE"):
@@ -225,23 +227,22 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
                 quantity = productdish_form.cleaned_data.get("quantity")
                 unit = productdish_form.cleaned_data.get("unit")
 
-                product, created = Product.objects.get_or_create(
-                    name=product_name, defaults={"is_favorite": product_is_favorite}
-                )
+                if product_name is not None:
+                    product, created = Product.objects.get_or_create(
+                        name=product_name, defaults={"is_favorite": product_is_favorite}
+                    )
 
-                ProductDish.objects.update_or_create(
-                    id=productdish_form.instance.id,
-                    defaults={
-                        "dish": dish,
-                        "product": product,
-                        "quantity": quantity,
-                        "unit": unit,
-                    },
-                )
+                    ProductDish.objects.update_or_create(
+                        id=productdish_form.instance.id,
+                        defaults={
+                            "dish": dish,
+                            "product": product,
+                            "quantity": quantity,
+                            "unit": unit,
+                        },
+                    )
 
-                UserProduct.objects.get_or_create(user=user, product=product)
-
-            UserDish.objects.get_or_create(user=user, dish=dish)
+                    UserProduct.objects.get_or_create(user=user, product=product)
 
             return redirect(self.get_success_url())
         else:
