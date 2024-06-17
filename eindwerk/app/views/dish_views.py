@@ -28,6 +28,11 @@ class DishListView(LoginRequiredMixin, ListView):
         - dish_products: A dictionary mapping each dish to its associated products.
         - menus: A queryset of all menus belonging to the current user.
         - user: The current user.
+
+    Models shown though the view:
+        - Dish
+        - ProductDish
+        - MenuList
     """
 
     login_url = settings.LOGIN_URL
@@ -63,15 +68,8 @@ class DishListView(LoginRequiredMixin, ListView):
 class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
     """This view allows users to view a dish in detail. Only dishes related to the user will be displayed.
 
-    Attributes:
-        login_url (str): The URL to redirect users who are not logged in.
-        model (Model): The model class representing the dish.
-        template_name (str): The name of the template to render.
-
-    Methods:
-        get_context_data(**kwargs): Returns a dictionary containing the context data for the view.
-            This includes the current dish and its associated product dishes.
-
+    Models manipulated:
+        - Dish
     """
 
     login_url = settings.LOGIN_URL
@@ -247,7 +245,12 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
 
 class DishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
     """This view is to delete a Dish and its related ProductDish objects. Because im handeling more than the Dish model
-    I have to overwrite the delete() function from the parent DeleteView class."""
+    I have to overwrite the delete() function from the parent DeleteView class.
+
+    Models manipulated by this view:
+        - Dish
+        - Product Dish
+    """
 
     login_url = settings.LOGIN_URL
     template_name = "dish/delete.html"
