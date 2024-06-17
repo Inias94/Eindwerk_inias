@@ -132,7 +132,7 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
             self.object = form.save()
 
             # Save the Dish first
-            dish = form.save()
+            dish = self.object
             # Create the UserDish object for establishing the relation between the user and the dish.
             UserDish.objects.get_or_create(user=user, dish=dish)
 
