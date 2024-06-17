@@ -225,8 +225,8 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
                 )
                 quantity = productdish_form.cleaned_data.get("quantity")
                 unit = productdish_form.cleaned_data.get("unit")
-                if product_name is not None:
 
+                if product_name is not None:
                     product, created = Product.objects.get_or_create(
                         name=product_name, defaults={"is_favorite": product_is_favorite}
                     )
@@ -242,7 +242,6 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
                     )
 
                     UserProduct.objects.get_or_create(user=user, product=product)
-
 
             return redirect(self.get_success_url())
         else:
