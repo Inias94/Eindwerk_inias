@@ -70,6 +70,10 @@ class DishDetailView(LoginRequiredMixin, UserDishAccessMixin, DetailView):
 
     Models manipulated:
         - Dish
+        - ProductDish
+        - UserMenu
+        - MenuList
+        - Unit
     """
 
     login_url = settings.LOGIN_URL
@@ -104,6 +108,13 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
     Forms used:
         - DishForm: For creating a new Dish object(form inherits from modelForm).
         - ProductDishFormset: For creating multiple products in the Dish creation.
+
+    Models manipulated:
+        - Dish
+        - ProductDish
+        - UserDish
+        - UserProduct
+        - Product
     """
 
     model = Dish
@@ -172,6 +183,13 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
     Forms used:
         - DishForm: For updating a Dish object (form inherits from modelForm).
         - ProductDishFormset: For managing multiple products in the Dish update.
+
+    Models manipulated:
+        - Dish
+        - ProductDish
+        - UserDish
+        - UserProduct
+        - Product
     """
 
     model = Dish
