@@ -6,7 +6,7 @@ from django.views.generic import ListView
 from ..models import Product
 from django.conf import settings
 
-
+# This code is currently not used.
 class ProductListView(LoginRequiredMixin, ListView):
     """This view will show you a list of all the users products."""
 

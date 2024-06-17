@@ -15,7 +15,7 @@ from ..forms import ProductShoppingListForm
 
 
 class ShopListListView(LoginRequiredMixin, ListView):
-
+    """This view give a list of the users shopping lists"""
     login_url = settings.LOGIN_URL
     model = ShoppingList
     template_name = "shoplist/list.html"
