@@ -1,4 +1,4 @@
-INSERT INTO unit (name, abbreviation) VALUES
+INSERT INTO app_unit (name, abbreviation) VALUES
   ('Gram', 'g'),
   ('Milliliter', 'ml'),
   ('Deciliter', 'dl'),

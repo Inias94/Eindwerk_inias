@@ -82,11 +82,6 @@ class ProductDish(models.Model):
         return f"{self.quantity:.0f}" if self.quantity % 1 == 0 else f"{self.quantity:.2f}"
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["product", "dish"], name="unique_product_dish"
-            )
-        ]
         ordering = [Lower("product__name")]
 
 
@@ -119,7 +114,7 @@ class ProductShoppingList(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     # Foreign keys
     product_dish = models.ForeignKey(ProductDish, on_delete=models.CASCADE)
-    shoppinglist = models.ForeignKey(ShoppingList, on_delete=models.DO_NOTHING)
+    shoppinglist = models.ForeignKey(ShoppingList, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.product_dish.product.name}"
