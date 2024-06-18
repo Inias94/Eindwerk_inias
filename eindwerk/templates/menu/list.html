@@ -1,12 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h3>Menu lijst</h3>
-    <p>Druk op deze knop om naar de gerechten pagina te gaan. <a class="btn btn-secondary" href="{% url 'dish_list' %}">Gerechten</a></p>
-    <ul>
-    {% for item in object_list %}
-        <li>{{ item }} <a href="{% url 'menu_detail' pk=item.pk %}">Detail</a></li>
-    {% endfor %}
-    </ul>
-    
+    <div class="container">
+        <h3>Menu lijst</h3>
+        <p>
+            Druk op deze knop om naar de gerechten pagina te gaan.
+            <a class="btn btn-secondary" href="{% url 'dish_list' %}">Gerechten</a>
+        </p>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for menu in object_list %}
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ menu.name }}</h5>
+                            <p class="card-text">Aantal gerechten: {{ menu.dishmenu_set.count }}</p>
+                            <a href="{% url 'menu_detail' pk=menu.pk %}" class="btn btn-primary">Bekijk Menu</a>
+                            <a href="{% url 'menu_delete' pk=menu.pk %}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
