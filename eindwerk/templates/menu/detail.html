@@ -12,34 +12,35 @@
                                 <h3 class="card-title">{{ dish_menu.dish.name }}</h3>
                                 <form action="{% url 'remove_from_menu' %}" method="post">
                                     {% csrf_token %}
-                                    <input type="hidden" name="menu_pk" value="{{ menu.pk }}">
-                                    <input type="hidden" name="dish_pk" value="{{ dish_menu.dish.pk }}">
+                                    <input type="hidden" name="dish_id" value="{{ dish_menu.dish.pk }}">
+                                    <input type="hidden" name="menu_id" value="{{ menu.pk }}">
                                     <button type="submit" class="btn btn-danger btn-sm" aria-label="Verwijder gerecht">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+
                             </div>
                             <p class="card-text text-truncate">{{ dish_menu.dish.recipe }}</p>
                             <p><strong>Favoriet:</strong> {{ dish_menu.dish.is_favorite|yesno:"Yes,No" }}</p>
                             <h4>Ingrediënten:</h4>
                             <table class="table">
                                 <thead>
-                                    <tr>
-                                        <th>Ingrediënt</th>
-                                        <th class="text-end">Hoeveelheid</th>
-                                        <th>Eenheid</th>
-                                    </tr>
+                                <tr>
+                                    <th>Ingrediënt</th>
+                                    <th class="text-end">Hoeveelheid</th>
+                                    <th>Eenheid</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    {% for product_dish in product_dishes %}
-                                        {% if product_dish.dish_id == dish_menu.dish.pk %}
-                                            <tr>
-                                                <td>{{ product_dish.product.name }}</td>
-                                                <td class="text-end">{{ product_dish.get_quantity_display }}</td>
-                                                <td>{{ product_dish.unit.abbreviation }}</td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
+                                {% for product_dish in product_dishes %}
+                                    {% if product_dish.dish_id == dish_menu.dish.pk %}
+                                        <tr>
+                                            <td>{{ product_dish.product.name }}</td>
+                                            <td class="text-end">{{ product_dish.get_quantity_display }}</td>
+                                            <td>{{ product_dish.unit.abbreviation }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -47,7 +48,7 @@
                 </div>
             {% endfor %}
         </div>
-        <a href="{% url 'create_shoppinglist_from_menu' menu.pk %}" class="btn btn-primary">Create Shopping List</a>
+        <a href="{% url 'create_shoppinglist_from_menu' menu.pk %}" class="btn btn-primary">Maak winkellijst</a>
         <a href="{% url 'menu_list' %}" class="btn btn-secondary">Terug naar menu lijst</a>
     </div>
 {% endblock %}
