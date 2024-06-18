@@ -114,7 +114,6 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
     model = Dish
     form_class = DishForm
     template_name = "dish/create.html"
-    success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -164,6 +163,10 @@ class DishCreateView(LoginRequiredMixin, UserDishAccessMixin, CreateView):
         else:
             return self.form_invalid(form)
 
+    def get_success_url(self):
+        # Na het opslaan van het formulier, leid de gebruiker door naar de detailweergave van de bijgewerkte Dish.
+        return reverse_lazy("dish_detail", kwargs={"pk": self.object.pk})
+
 
 class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
     """This view updates an existing dish object. A Dish containing multiple products.
@@ -181,7 +184,6 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
     model = Dish
     form_class = DishForm
     template_name = "dish/update.html"
-    success_url = reverse_lazy("dish_list")
 
     def get_context_data(self, **kwargs):
         """Add extra context variables to the view."""
@@ -247,15 +249,19 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
         else:
             return self.form_invalid(form)
 
+    def get_success_url(self):
+        # Na het opslaan van het formulier, leid de gebruiker door naar de detailweergave van de bijgewerkte Dish.
+        return reverse_lazy("dish_detail", kwargs={"pk": self.object.pk})
+
 
 class DishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
     """This view deletes an existing dish object. A Dish containing multiple products.
 
-     Relations affected in this DeleteView:
-         - User with Dish: UserDish model.
-         - Product with Dish: ProductDish model.
+    Relations affected in this DeleteView:
+        - User with Dish: UserDish model.
+        - Product with Dish: ProductDish model.
 
-     This view ensures that only dishes related to the requesting user can be deleted.
+    This view ensures that only dishes related to the requesting user can be deleted.
     """
 
     login_url = settings.LOGIN_URL
