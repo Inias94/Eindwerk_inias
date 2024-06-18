@@ -33,10 +33,10 @@
                                     {#                            If accordion not working, use line that is in comment #}
                                  aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <div class="card border-0 my-3">
+                                    <div class="card border-0 my-3 p-2">
                                         <div class="row">
                                             <h5 class="card-title mx-3 mt-2 col">Recept</h5>
-                                            <a class="col" href="{% url 'dish_detail' pk=dish.pk %}">Detail</a>
+                                            <a class="col" href="{% url 'dish_detail' pk=dish.pk %}"><button type="button" class="btn btn-primary btn-sm">Details</button></a>
                                         </div>
                                         <p class="card-text mx-3 my-2">{{ dish.recipe|linebreaks }}</p>
                                     </div>

@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div>
-        <form action="" method="post">
+    <div class="container my-4">
+        <form id="saveForm" action="" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="col-12 btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmSaveModal">Opslaan</button>
+            <button type="button" class="col-12 btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmSaveModal">Opslaan</button>
         </form>
     </div>
+
     {# Modal #}
-    <div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel"
-         aria-hidden="true">
+    <div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -18,11 +18,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Weet u zeker dat u de gegevens wilt opslaan? U kan deze niet meer wijzigen.
+                    Weet u zeker dat u de gegevens wilt opslaan? U kunt deze niet meer wijzigen.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
-                    <button type="submit" form="form" class="btn btn-primary">Opslaan</button>
+                    <button type="submit" form="saveForm" class="btn btn-primary">Opslaan</button>
                 </div>
             </div>
         </div>
