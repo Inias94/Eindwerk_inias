@@ -1,27 +1,30 @@
-{% extends 'base.html' %}
+{#{% extends 'base.html' %}#}
+{##}
+{#{% block content %}#}
+{#  <h2>Shopping List</h2>#}
+{#  <div class="card">#}
+{#    <table>#}
+{#      <thead>#}
+{#        <tr>#}
+{#          <th><input type="checkbox" id="select-all"></th>#}
+{#            <th>Product</th>#}
+{#          <th>Quantity</th>#}
+{#          <th>Unit</th>#}
+{#        </tr>#}
+{#      </thead>#}
+{#      <tbody>#}
+{#        {% for item in shoppinglist.productshoppinglist_set.all %}#}
+{#          <tr>#}
+{#            <td>#}
+{#              <input type="checkbox" class="item-checkbox" data-id="{{ item.id }}">  </td>#}
+{#            <td>{{ item.product_dish.product.name }}</td>#}
+{#            <td>{{ item.product_dish.quantity }}</td>#}
+{#            <td>{{ item.product_dish.unit.abbreviation }}</td>#}
+{#          </tr>#}
+{#        {% endfor %}#}
+{#      </tbody>#}
+{#    </table>#}
+{#  </div>#}
+{#{% endblock %}#}
 
-{% block content %}
-  <h2>Shopping List</h2>
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th><input type="checkbox" id="select-all"></th>  <th>Product</th>
-          <th>Quantity</th>
-          <th>Unit</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in shoppinglist.productshoppinglist_set.all %}
-          <tr>
-            <td>
-              <input type="checkbox" class="item-checkbox" data-id="{{ item.id }}">  </td>
-            <td>{{ item.product_dish.product.name }}</td>
-            <td>{{ item.product_dish.quantity }}</td>
-            <td>{{ item.product_dish.unit.abbreviation }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endblock %}
+<h1>LEEG??</h1>
