@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Confirm Delete</h2>
-    <p>Are you sure you want to delete the dish "{{ object.name }}"?</p>
+    <h2>Verwijderen bevestigen</h2>
+    <p>Weet je zeker dat je het volgende gerecht wilt verwijderen: "{{ object.name }}"?</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="{% url 'dish_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger">Verwijder</button>
+        <a href="{% url 'dish_list' %}" class="btn btn-secondary">Annuleer</a>
     </form>
 </div>
 {% endblock %}
