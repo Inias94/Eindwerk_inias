@@ -48,6 +48,12 @@ class ProductDishForm(forms.ModelForm):
     class Meta:
         model = ProductDish
         fields = ["product_name", "quantity", "unit", "product_is_favorite"]
+        labels = {
+            "product_name": "Product naam",
+            "product_is_favorite": "Favoriet",
+            "quantity": "Hoeveelheid",
+            "unit": "Eenheid"
+        }
         widgets = {
             "quantity": forms.NumberInput(
                 attrs={
@@ -120,19 +126,19 @@ class UnitForm(forms.ModelForm):
         fields = ["name", "abbreviation"]
         labels = {
             "name": "Maateenheid",
-            "abbreviation": "Afkorting van de eenheid",
+            "abbreviation": "Afkorting",
         }
         widgets = {
             "name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Maateenheid naam",
+                    "placeholder": "Maateenheid",
                 }
             ),
             "abbreviation": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Afkorting van de maateenheid",
+                    "placeholder": "Afkorting",
                 }
             ),
         }
@@ -153,6 +159,7 @@ class MenuForm(forms.ModelForm):
         }
 
 
+# TODO: nakijken nog van toepassing : DishMenuForm?
 class DishMenuForm(forms.ModelForm):
     class Meta:
         model = DishMenu
@@ -191,4 +198,4 @@ class BugReportForm(forms.ModelForm):
                 }
             ),
         }
-        labels = {"title": "Bug-titel", "description": "Bug-description"}
+        labels = {"title": "Probleem", "description": "Probleem beschrijving"}
