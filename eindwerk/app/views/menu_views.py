@@ -11,7 +11,7 @@ from django.shortcuts import redirect, get_object_or_404
 
 # Project imports
 from django.conf import settings
-from ..models import MenuList, UserMenu, DishMenu, Dish, ProductDish
+from ..models import MenuList, UserMenu, DishMenu, Dish, ProductDish, UserDish
 from ..forms import MenuForm
 from ..formsets import DishMenuFormSet
 
@@ -90,14 +90,7 @@ class MenuDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class MenuDetailView(LoginRequiredMixin, DetailView):
-    """This view lets you view the detail of a menu related to the user. And dishes related to the menu.
-
-    Added dishes to the context so a user can see whats in the menu.
-
-    Models:
-        - MenuList
-        - DishMenu
-    """
+    """View to display details of a menu related to the user and only show dishes related to the user."""
 
     login_url = settings.LOGIN_URL
     model = MenuList
@@ -105,9 +98,17 @@ class MenuDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "menu"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super().get_context_data(**kwargs)
         menu = self.get_object()
-        context["dishes"] = DishMenu.objects.filter(menu=menu)
+
+        # Retrieve all dishes associated with this menu and linked to the user
+        user_dish_ids = UserDish.objects.filter(user=self.request.user).values_list('dish_id', flat=True)
+        context["dishes"] = DishMenu.objects.filter(menu=menu, dish_id__in=user_dish_ids)
+
+        # Retrieve all product dishes associated with the dishes in this menu
+        dish_ids = DishMenu.objects.filter(menu=menu, dish_id__in=user_dish_ids).values_list('dish_id', flat=True)
+        context['product_dishes'] = ProductDish.objects.filter(dish_id__in=dish_ids)
+
         return context
 
     def get_queryset(self):
@@ -126,7 +127,8 @@ class AddToMenuView(LoginRequiredMixin, View):
         dish = get_object_or_404(Dish, pk=dish_id)
         menu = get_object_or_404(MenuList, pk=menu_id)
 
-        DishMenu.objects.create(menu=menu, dish=dish)
+        DishMenu.objects.get_or_create(menu=menu, dish=dish)
+        UserMenu.objects.get_or_create(user=self.request.user, menu=menu)
         return redirect("dish_list")
 
 
@@ -142,5 +144,8 @@ class RemoveFromMenuView(LoginRequiredMixin, View):
         dish = get_object_or_404(Dish, pk=dish_id)
         menu = get_object_or_404(MenuList, pk=menu_id)
 
-        DishMenu.objects.filter(menu=menu, dish=dish).delete()
-        return redirect("dish_list")
+        dish_menu_to_delete = DishMenu.objects.filter(menu=menu, dish=dish).first()
+        if dish_menu_to_delete:
+            dish_menu_to_delete.delete()
+
+        return redirect("menu_detail", pk=menu_id)
