@@ -1,9 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Shoppinglists</h1>
-    {% for list in object_list %}
-    <li><a href="{% url 'shoppinglist_detail' pk=list.pk %}">{{ list }}</a></li>
-        <p><a href="{% url 'shoppinglist_delete' pk=list.pk %}">Verwijderen</a></p>
-    {% endfor %}
-{% endblock content %}
+    <div class="container">
+        <h1 class="my-4">Shoppinglists</h1>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for list in object_list %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ list }}</h5>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'shoppinglist_detail' pk=list.pk %}" class="btn btn-primary">Details</a>
+                            <a href="{% url 'shoppinglist_delete' pk=list.pk %}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
