@@ -92,7 +92,7 @@ class UpdateItemFromShoppingListView(LoginRequiredMixin, UpdateView):
     template_name = "shoplist/update.html"
 
     def get_queryset(self):
-        return ProductShoppingList.objects.filter(user=self.request.user)
+        return ProductShoppingList.objects.filter(shoppinglist__user=self.request.user)
 
     def get_success_url(self):
         # Haal de shoppinglist op van het item dat is bijgewerkt
@@ -109,8 +109,11 @@ class DeleteItemFromShoppingListView(LoginRequiredMixin, DeleteView):
     context_object_name = "product_shoppinglist_product"
     template_name = "shoplist/delete_item.html"
 
-    def get_queryset(self):
-        return ProductShoppingList.objects.filter(user=self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context['shoppinglist'] = obj.shoppinglist
+        return context
 
     def get_success_url(self):
         shoppinglist = self.object.shoppinglist
