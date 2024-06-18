@@ -1,12 +1,33 @@
-{% extends "base.html" %}
+{#{% extends "base.html" %}#}
+{##}
+{#{% block content %}#}
+{#<div class="container">#}
+{#    <h2>Update Menu</h2>#}
+{#    <form method="post">#}
+{#        {% csrf_token %}#}
+{#        {{ form.as_p }}#}
+{#        <button type="submit" class="btn btn-primary">Save</button>#}
+{#    </form>#}
+{#</div>#}
+{#{% endblock %}#}
+
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h2>Update Menu</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-</div>
+    <div class="container">
+        <h1>Gerechten toevoegen aan menu: {{ object.name }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="dish_pk">Selecteer een gerecht om toe te voegen:</label>
+                <select class="form-control" id="dish_pk" name="dish_pk">
+                    {% for dish in available_dishes %}
+                        <option value="{{ dish.pk }}">{{ dish.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Voeg gerecht toe</button>
+            <a href="{% url 'menu_detail' pk=object.pk %}" class="btn btn-secondary">Annuleer</a>
+        </form>
+    </div>
 {% endblock %}
