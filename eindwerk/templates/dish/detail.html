@@ -3,14 +3,12 @@
 {% block content %}
     <div class="container">
         <div class="row align-items-center">
-            <div class="col mt-3">
+            <div class="col-10 mt-3">
                 <h4>{{ dish.name }}</h4>
-                <a href="{% url 'dish_update' pk=dish.pk %}">Pas aan</a>
-                <a href="{% url 'dish_delete' pk=dish.pk %}">Delete</a>
-            </div>
-            <div class="col">
+                <a class="btn btn-warning" href="{% url 'dish_update' pk=dish.pk %}"><i class="bi bi-pencil-square"></i></a>
+                <a class="btn btn-danger" href="{% url 'dish_delete' pk=dish.pk %}"><i class="bi bi-trash"></i></a>
                 <a href="#" class="btn btn-success add-to-menu-btn" data-dish-id="{{ dish.id }}" data-bs-toggle="modal" data-bs-target="#addToMenuModal">
-                    <h4 class="bi bi-cart-plus text-center">Voeg toe</h4>
+                    <i class="bi bi-menu-button-wide text-center"> Voeg toe aan menu</i>
                 </a>
             </div>
         </div>
@@ -21,17 +19,17 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Hoeveelheid</th>
+                    <th>Ingrediënt</th>
+                    <th class="text-end">Hoeveelheid</th>
                     <th>Eenheid</th>
-                    <th class="text-end">Acties</th>
+                    <th class="text-end"></th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for product_dish in dish_products %}
                     <tr>
                         <td>{{ product_dish.product.name }}</td>
-                        <td>{{ product_dish.quantity }}</td>
+                        <td class="text-end">{{ product_dish.get_quantity_display }}</td>
                         <td>{{ product_dish.unit.abbreviation }}</td>
                         <td class="text-end">
                             <a class="btn btn-danger" href="{% url 'product_dish_delete' pk=product_dish.pk %}"><i class="bi bi-trash"></i></a>

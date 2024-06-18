@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Shopping List</h2>
+    <h2>Winkellijst</h2>
     <div class="card p-3">
         <table>
             <thead>
             <tr>
                 <th></th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Unit</th>
-                <th>Aanpassen</th>
+                <th>Producten</th>
+                <th class="text-end">Hoeveelheid</th>
+                <th>Eenheid</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -20,8 +20,8 @@
                         <input type="checkbox" class="item-checkbox" data-id="{{ item.id }}">
                     </td>
                     <td>{{ item.product_dish.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.product_dish.product.unit.abbreviation }}</td>
+                    <td class="text-end">{{ item.get_quantity_display }}</td>
+                    <td>{{ item.product_dish.unit.abbreviation }}</td>
                     <td>
                         <a href="{% url 'update_product_shoppinglist' item.id %}" class="btn btn-warning"><i
                                 class="bi bi-pencil-square"></i></a>
