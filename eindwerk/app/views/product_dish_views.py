@@ -59,3 +59,15 @@ class ProductDishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView)
     def get_success_url(self):
         obj = self.get_object()
         return reverse("dish_detail", kwargs={"pk": obj.dish.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        dish = obj.dish
+
+        # Retrieve all productdish items related to the current dish
+        product_dishes = ProductDish.objects.filter(dish=dish)
+
+        context['dish'] = dish
+        context['product_dishes'] = product_dishes
+        return context
