@@ -1,49 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2>Update Dish</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <h3>Products</h3>
-        <div id="productdish_formset">
-            {{ productdish_formset.management_form }}
-            <div id="product-form-list">
-                {% for form in productdish_formset %}
-                    <div class="form-row product-form card p-3 mb-3">
-                        {{ form.as_p }}
-                        <hr>
-                    </div>
-                {% endfor %}
+    <div class="container">
+        <h2>Gerecht wijzigen</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <h3>Ingrediënten</h3>
+            <div id="productdish_formset">
+                {{ productdish_formset.management_form }}
+                <div id="product-form-list">
+                    {% for form in productdish_formset %}
+                        <div class="form-row product-form card p-3 mb-3">
+                            {{ form.as_p }}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        <button type="button" class="btn btn-secondary" id="add-more">Add more</button>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+            <button type="button" class="btn btn-warning" id="add-more"><i class="bi bi-plus-lg"></i></button>
+            <button type="submit" class="btn btn-success"><i class="bi bi-floppy p-3"> Opslaan</i></button>
+        </form>
 
-    <template id="empty-form-template">
-        <div class="form-row product-form card p-3 mb-3">
-            {{ productdish_formset.empty_form.as_p }}
-        </div>
-    </template>
+        <template id="empty-form-template">
+            <div class="form-row product-form card p-3 mb-3">
+                {{ productdish_formset.empty_form.as_p }}
+            </div>
+        </template>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let addMoreBtn = document.getElementById('add-more');
-            let formsetDiv = document.getElementById('product-form-list');
-            let totalForms = document.getElementById('id_productdish_set-TOTAL_FORMS');
-            let emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
-            let formNum = parseInt(totalForms.value);
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                let addMoreBtn = document.getElementById('add-more');
+                let formsetDiv = document.getElementById('product-form-list');
+                let totalForms = document.getElementById('id_productdish_set-TOTAL_FORMS');
+                let emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
+                let formNum = parseInt(totalForms.value);
 
-            addMoreBtn.addEventListener('click', function(event) {
-                event.preventDefault();
-                let newForm = emptyFormTemplate.replace(/__prefix__/g, formNum);
-                formsetDiv.insertAdjacentHTML('beforeend', newForm);
-                formNum++;
-                totalForms.value = formNum;
+                addMoreBtn.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    let newForm = emptyFormTemplate.replace(/__prefix__/g, formNum);
+                    formsetDiv.insertAdjacentHTML('beforeend', newForm);
+                    formNum++;
+                    totalForms.value = formNum;
+                });
             });
-        });
-    </script>
-</div>
+        </script>
+    </div>
 {% endblock %}
