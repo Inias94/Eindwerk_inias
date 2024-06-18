@@ -1,13 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <h2>Verwijder Product uit Gerecht</h2>
-        <form method="post">
-            {% csrf_token %}
-            <p>Weet je zeker dat je dit product wilt verwijderen?</p>
-            <button type="submit" class="btn btn-danger">Verwijder</button>
-            <a href="{{ success_url }}" class="btn btn-secondary">Annuleer</a>
-        </form>
+<div class="container">
+    <h2>Verwijder Product uit Gerecht</h2>
+    <p>Weet je zeker dat je dit product wilt verwijderen?</p>
+
+    <div class="alert alert-warning">
+        <strong>Dish:</strong> {{ dish.name }}
     </div>
+
+    <ul class="list-group mb-3">
+        {% for product_dish in product_dishes %}
+        <li class="list-group-item">
+            <strong>Product:</strong> {{ product_dish.product.name }}<br>
+            <strong>Quantity:</strong> {{ product_dish.quantity }} {{ product_dish.unit }}<br>
+            <strong>Favorite:</strong> {% if product_dish.product.is_favorite %}Yes{% else %}No{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Verwijder</button>
+        <a href="{% url 'dish_detail' pk=dish.pk %}" class="btn btn-secondary">Annuleer</a>
+    </form>
+</div>
 {% endblock %}

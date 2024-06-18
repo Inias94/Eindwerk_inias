@@ -1,13 +1,15 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <h2>Verwijder Product uit winkellijst</h2>
-        <form method="post">
-            {% csrf_token %}
-            <p>Weet je zeker dat je dit product wilt verwijderen?</p>
-            <button type="submit" class="btn btn-danger">Verwijder</button>
-            <a href="{{ success_url }}" class="btn btn-secondary">Annuleer</a>
-        </form>
+<div class="container mt-4">
+    <h2>Verwijderen ingrediënt uit winkellijst</h2>
+    <div class="alert alert-warning">
+        <strong>Ingrediënt:</strong> {{ object }}
     </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Verwijder</button>
+        <a href="{% url 'shoppinglist_detail' pk=shoppinglist.pk %}" class="btn btn-secondary">Annuleer</a>
+    </form>
+</div>
 {% endblock %}
