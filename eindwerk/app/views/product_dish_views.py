@@ -51,6 +51,7 @@ class ProductDishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView)
 
 
 class ProductDishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
+    """View to delete a productdish related to the user."""
     login_url = settings.LOGIN_URL
     model = ProductDish
     template_name = "product_dish/delete.html"

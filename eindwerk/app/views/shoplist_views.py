@@ -14,22 +14,36 @@ from ..models import ProductDish, MenuList, ShoppingList, ProductShoppingList
 from ..forms import ProductShoppingListForm
 
 
-class ShopListListView(LoginRequiredMixin, ListView):
-
-    login_url = settings.LOGIN_URL
-    model = ShoppingList
-    template_name = "shoplist/list.html"
+"Nakijken of deze code nog van toepassing is!"
+# class ShopListListView(LoginRequiredMixin, ListView):
+#     """This view list"""
+#     login_url = settings.LOGIN_URL
+#     model = ShoppingList
+#     template_name = "shoplist/list.html"
 
 
 class ShoppingListDetailView(LoginRequiredMixin, DetailView):
+    """This view shows all the details of the shopping list, products, units and amount.
+    This only for shoppinglists related tot he user"""
 
     login_url = settings.LOGIN_URL
     model = ShoppingList
     context_object_name = "shoppinglist"
     template_name = "shoplist/detail.html"
 
+    def get_queryset(self):
+        return ShoppingList.objects.filter(user=self.request.user)
+
 
 class CreateShoppingListFromMenuView(LoginRequiredMixin, View):
+    """View to create a new shopping list from a selected menu for the logged-in user.
+
+    This view handles the process of creating a shopping list based on the products
+    contained in the dishes of a specified menu. It aggregates the quantities of each
+    product across all dishes and creates corresponding ProductShoppingList entries
+    for the shopping list.
+    """
+
     login_url = settings.LOGIN_URL
 
     def get(self, request, *args, **kwargs):
@@ -41,7 +55,7 @@ class CreateShoppingListFromMenuView(LoginRequiredMixin, View):
 
         product_quantities = {}
 
-        dishes = menu.dishmenu_set.all()
+        dishes = menu.dishmenu_set.all()  # Gets all dishes related to the menu.
         for dish_menu in dishes:
             dish = dish_menu.dish
             product_dishes = ProductDish.objects.filter(dish=dish)
@@ -69,12 +83,16 @@ class CreateShoppingListFromMenuView(LoginRequiredMixin, View):
 
 
 class UpdateItemFromShoppingListView(LoginRequiredMixin, UpdateView):
+    """View to update an item in a shopping list for a specified product related to the user."""
 
     login_url = settings.LOGIN_URL
     model = ProductShoppingList
     context_object_name = "product_shoppinglist_product"
     form_class = ProductShoppingListForm
     template_name = "shoplist/update.html"
+
+    def get_queryset(self):
+        return ProductShoppingList.objects.filter(user=self.request.user)
 
     def get_success_url(self):
         # Haal de shoppinglist op van het item dat is bijgewerkt
@@ -84,11 +102,15 @@ class UpdateItemFromShoppingListView(LoginRequiredMixin, UpdateView):
 
 
 class DeleteItemFromShoppingListView(LoginRequiredMixin, DeleteView):
+    """View to delete an item in a shopping list for a specified product related to the user."""
 
     login_url = settings.LOGIN_URL
     model = ProductShoppingList
     context_object_name = "product_shoppinglist_product"
     template_name = "shoplist/delete_item.html"
+
+    def get_queryset(self):
+        return ProductShoppingList.objects.filter(user=self.request.user)
 
     def get_success_url(self):
         shoppinglist = self.object.shoppinglist
@@ -96,7 +118,11 @@ class DeleteItemFromShoppingListView(LoginRequiredMixin, DeleteView):
 
 
 class AddItemToShoppingListView(LoginRequiredMixin, CreateView):
+    """View to add an item to a shopping list for a specified product related to the user."""
     login_url = settings.LOGIN_URL
     model = ProductShoppingList
     context_object_name = "product_shoppinglist_product"
     form_class = ProductShoppingListForm
+
+    def get_queryset(self):
+        return ProductShoppingList.objects.filter(user=self.request.user)

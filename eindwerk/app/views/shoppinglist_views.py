@@ -6,7 +6,7 @@ from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 
 # Project imports
 from django.conf import settings
-from ..models import ShoppingList
+from ..models import ShoppingList, ProductShoppingList
 from ..forms import ShoppingListForm
 
 
@@ -38,7 +38,7 @@ class ShoppingListListView(LoginRequiredMixin, ListView):
 
 
 class ShoppingListDeleteView(LoginRequiredMixin, DeleteView):
-
+    """View to delete a shopping list object related to the user."""
     login_url = settings.LOGIN_URL
     model = ShoppingList
     template_name = "shoppinglist/delete.html"
@@ -46,3 +46,8 @@ class ShoppingListDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return ShoppingList.objects.filter(user=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        ProductShoppingList.objects.filter(shoppinglist=self.object).delete()
+        self.object.delete()
+

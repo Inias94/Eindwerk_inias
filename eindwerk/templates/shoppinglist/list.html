@@ -4,5 +4,6 @@
     <h1>Shoppinglists</h1>
     {% for list in object_list %}
     <li><a href="{% url 'shoppinglist_detail' pk=list.pk %}">{{ list }}</a></li>
+        <p><a href="{% url 'shoppinglist_delete' pk=list.pk %}">Verwijderen</a></p>
     {% endfor %}
 {% endblock content %}

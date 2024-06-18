@@ -40,18 +40,6 @@ urlpatterns = [
         ProductDishDeleteView.as_view(),
         name="product_dish_delete",
     ),
-    # Shoppinglist
-    path("shoppinglist", ShoppingListListView.as_view(), name="shoppinglist"),
-    path(
-        "shoppinglist/<int:pk>/delete/",
-        ShoppingListDeleteView.as_view(),
-        name="shoppinglist_delete",
-    ),
-    # path(
-    #     "shoppinglist/create/",
-    #     ShoppingListCreateView.as_view(),
-    #     name="shoppinglist_create",
-    # ),
     # Unit
     path("unit/", UnitListView.as_view(), name="unit_list"),
     path("unit/create/", UnitCreateView.as_view(), name="unit_create"),
@@ -65,6 +53,13 @@ urlpatterns = [
     path("menu/<int:pk>/", MenuDetailView.as_view(), name="menu_detail"),
     path("add_to_menu/", AddToMenuView.as_view(), name="add_to_menu"),
     path("remove_from_menu/", RemoveFromMenuView.as_view(), name="remove_from_menu"),
+    # Shoppinglist
+    path("shoppinglist", ShoppingListListView.as_view(), name="shoppinglist"),
+    path(
+        "shoppinglist/<int:pk>/delete/",
+        ShoppingListDeleteView.as_view(),
+        name="shoppinglist_delete",
+    ),
     # Shoplist
     path(
         "create-shoppinglist/<int:menu_id>/",
@@ -85,6 +80,11 @@ urlpatterns = [
         "shoplist/<int:pk>/delete",
         DeleteItemFromShoppingListView.as_view(),
         name="delete_product_shoppinglist",
+    ),
+    path(
+        "shoplist/<int:pk>/add_product/",
+        AddItemToShoppingListView.as_view(),
+        name="add_product_to_shoppinglist",
     ),
     # Bug Report
     path("bug_report/create/", BugReportCreateView.as_view(), name="bug_report_create"),
