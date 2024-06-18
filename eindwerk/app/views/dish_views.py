@@ -249,6 +249,15 @@ class DishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
 
 
 class DishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
+    """This view deletes an existing dish object. A Dish containing multiple products.
+
+     Relations affected in this DeleteView:
+         - User with Dish: UserDish model.
+         - Product with Dish: ProductDish model.
+
+     This view ensures that only dishes related to the requesting user can be deleted.
+    """
+
     login_url = settings.LOGIN_URL
     template_name = "dish/delete.html"
     model = Dish
@@ -256,7 +265,9 @@ class DishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
+
         UserDish.objects.filter(dish=self.object).delete()
         ProductDish.objects.filter(dish=self.object).delete()
         self.object.delete()
+
         return redirect(self.get_success_url())
