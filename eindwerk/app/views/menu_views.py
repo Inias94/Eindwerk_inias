@@ -102,12 +102,18 @@ class MenuDetailView(LoginRequiredMixin, DetailView):
         menu = self.get_object()
 
         # Retrieve all dishes associated with this menu and linked to the user
-        user_dish_ids = UserDish.objects.filter(user=self.request.user).values_list('dish_id', flat=True)
-        context["dishes"] = DishMenu.objects.filter(menu=menu, dish_id__in=user_dish_ids)
+        user_dish_ids = UserDish.objects.filter(user=self.request.user).values_list(
+            "dish_id", flat=True
+        )
+        context["dishes"] = DishMenu.objects.filter(
+            menu=menu, dish_id__in=user_dish_ids
+        )
 
         # Retrieve all product dishes associated with the dishes in this menu
-        dish_ids = DishMenu.objects.filter(menu=menu, dish_id__in=user_dish_ids).values_list('dish_id', flat=True)
-        context['product_dishes'] = ProductDish.objects.filter(dish_id__in=dish_ids)
+        dish_ids = DishMenu.objects.filter(
+            menu=menu, dish_id__in=user_dish_ids
+        ).values_list("dish_id", flat=True)
+        context["product_dishes"] = ProductDish.objects.filter(dish_id__in=dish_ids)
 
         return context
 
@@ -127,8 +133,9 @@ class AddToMenuView(LoginRequiredMixin, View):
         dish = get_object_or_404(Dish, pk=dish_id)
         menu = get_object_or_404(MenuList, pk=menu_id)
 
-        DishMenu.objects.get_or_create(menu=menu, dish=dish)
-        UserMenu.objects.get_or_create(user=self.request.user, menu=menu)
+        DishMenu.objects.create(menu=menu, dish=dish)
+        # UserMenu.objects.create(user=self.request.user, menu=menu)
+        # MenuList.objects.update_or_create()
         return redirect("dish_list")
 
 
@@ -144,8 +151,6 @@ class RemoveFromMenuView(LoginRequiredMixin, View):
         dish = get_object_or_404(Dish, pk=dish_id)
         menu = get_object_or_404(MenuList, pk=menu_id)
 
-        dish_menu_to_delete = DishMenu.objects.filter(menu=menu, dish=dish).first()
-        if dish_menu_to_delete:
-            dish_menu_to_delete.delete()
+        DishMenu.objects.filter(menu=menu, dish=dish).first().delete()
 
         return redirect("menu_detail", pk=menu_id)
