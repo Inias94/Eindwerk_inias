@@ -1,3 +1,4 @@
+from django.db.models.functions import Lower
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -70,12 +71,15 @@ class ProductDish(models.Model):
     )
 
     # Foreign key
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     unit = models.ForeignKey("Unit", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.product}"
+
+    def get_quantity_display(self):
+        return f"{self.quantity:.0f}" if self.quantity % 1 == 0 else f"{self.quantity:.2f}"
 
     class Meta:
         constraints = [
@@ -83,6 +87,7 @@ class ProductDish(models.Model):
                 fields=["product", "dish"], name="unique_product_dish"
             )
         ]
+        ordering = [Lower("product__name")]
 
 
 class Unit(models.Model):
@@ -119,8 +124,11 @@ class ProductShoppingList(models.Model):
     def __str__(self) -> str:
         return f"{self.product_dish.product.name}"
 
+    def get_quantity_display(self):
+        return f"{self.quantity:.0f}" if self.quantity % 1 == 0 else f"{self.quantity:.2f}"
+
     class Meta:
-        ordering = ["product_dish"]
+        ordering = [Lower('product_dish__product__name')]
 
 
 class UserMenu(models.Model):

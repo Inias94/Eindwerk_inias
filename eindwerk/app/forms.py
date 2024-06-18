@@ -1,5 +1,4 @@
 from django import forms
-
 from .models import (
     ShoppingList,
     Product,
@@ -11,6 +10,20 @@ from .models import (
     ProductShoppingList,
     BugReport,
 )
+
+
+class CapitalizeField(forms.CharField):
+    """Custom formfield to capitalize the 1st word in a field."""
+
+    def clean(self, value):
+        value = super().clean(value)
+        if value:
+            words = value.split()
+            if len(words) == 1:
+                return value.capitalize()
+            else:
+                return value
+        return value
 
 
 class ProductForm(forms.ModelForm):
@@ -38,11 +51,19 @@ class ProductForm(forms.ModelForm):
             ),
         }
 
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        words = name.split()
+        if len(words) == 1:
+            return name.capitalize()
+        else:
+            return name
+
 
 class ProductDishForm(forms.ModelForm):
     """Form for linking products to a dish with a certain amount and unit."""
 
-    product_name = forms.CharField(max_length=100, required=True, label="Product naam")
+    product_name = CapitalizeField(max_length=100, required=True, label="Product naam")
     product_is_favorite = forms.BooleanField(required=False, label="Favoriet")
 
     class Meta:
@@ -52,7 +73,7 @@ class ProductDishForm(forms.ModelForm):
             "product_name": "Product naam",
             "product_is_favorite": "Favoriet",
             "quantity": "Hoeveelheid",
-            "unit": "Eenheid"
+            "unit": "Eenheid",
         }
         widgets = {
             "quantity": forms.NumberInput(
@@ -111,6 +132,14 @@ class DishForm(forms.ModelForm):
             ),
         }
 
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        words = name.split()
+        if len(words) == 1:
+            return name.capitalize()
+        else:
+            return name
+
 
 class ShoppingListForm(forms.ModelForm):
     """Form for creating a new shopping list."""
@@ -158,8 +187,15 @@ class MenuForm(forms.ModelForm):
             ),
         }
 
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        words = name.split()
+        if len(words) == 1:
+            return name.capitalize()
+        else:
+            return name
 
-# TODO: nakijken nog van toepassing : DishMenuForm?
+
 class DishMenuForm(forms.ModelForm):
     class Meta:
         model = DishMenu
@@ -199,3 +235,11 @@ class BugReportForm(forms.ModelForm):
             ),
         }
         labels = {"title": "Probleem", "description": "Probleem beschrijving"}
+
+    def clean_title(self):
+        title = self.cleaned_data.get("title", "")
+        words = title.split()
+        if len(words) == 1:
+            return title.capitalize()
+        else:
+            return title
