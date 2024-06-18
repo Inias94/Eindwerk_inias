@@ -28,71 +28,57 @@ class MenuListView(LoginRequiredMixin, ListView):
 
 
 class MenuCreateView(CreateView):
+    """This view lets you create a new menu. Dishes can be added to this Menu model in an other View.
+
+    Models:
+        - MenuList
+        - UserMenu
+
+    Forms:
+        - MenuForm
+    """
+
+    login_url = settings.LOGIN_URL
     model = MenuList
     form_class = MenuForm
     template_name = "menu/create.html"
     success_url = reverse_lazy("menu_list")
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.method == "POST":
-            data["dishes_formset"] = DishMenuFormSet(self.request.POST)
-        else:
-            data["dishes_formset"] = DishMenuFormSet(queryset=DishMenu.objects.none())
-
-        return data
-
     def form_valid(self, form):
-        context = self.get_context_data()
-        user = self.request.user
-        dishes_formset = context["dishes_formset"]
-
-        if all([form.is_valid(), dishes_formset.is_valid()]):
+        if form.is_valid():
             self.object = form.save()
-
-            for dish_form in dishes_formset:
-                if dish_form.cleaned_data and not dish_form.cleaned_data.get("DELETE"):
-                    DishMenu.objects.create(
-                        menu=self.object, dish=dish_form.cleaned_data["dish"]
-                    )
-            UserMenu.objects.create(user=user, menu=self.object)
-
+            UserMenu.objects.get_or_create(user=self.request.user, menu=self.object)
             return redirect(self.get_success_url())
         else:
-            return self.render_to_response(self.get_context_data(form=form))
+            return self.form_invalid(form)
 
 
-class MenuUpdateView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        menu = get_object_or_404(MenuList, pk=pk)
-        form = MenuForm(instance=menu)
-        formset = DishMenuFormSet(queryset=DishMenu.objects.filter(menu=menu))
+class MenuUpdateView(LoginRequiredMixin, UpdateView):
+    """This view lets a user change his menu, onyl menu's related to the user.
 
-        context = {
-            "form": form,
-            "formset": formset,
-        }
-        return render(request, "menu/update.html", context)
+    Models:
+        - MenuList
 
-    def post(self, request, pk):
-        menu = get_object_or_404(MenuList, pk=pk)
-        form = MenuForm(request.POST, instance=menu)
-        formset = DishMenuFormSet(
-            request.POST, queryset=DishMenu.objects.filter(menu=menu)
-        )
-        if form.is_valid() and formset.is_valid():
-            form.save()
-            formset.save()
+    Forms:
+        - MenuForm
+    """
 
-            # Handle deletion of forms marked for deletion
-            for form in formset.deleted_forms:
-                if form.instance.pk:
-                    form.instance.delete()
+    login_url = settings.LOGIN_URL
+    model = MenuList
+    form_class = MenuForm
+    template_name = "menu/update.html"
+    success_url = reverse_lazy("menu_list")
 
-            return redirect("menu_list")
+    def get_queryset(self):
+        return MenuList.objects.filter(usermenu__user=self.request.user)
 
 
 class MenuDeleteView(LoginRequiredMixin, DeleteView):
+    """This view lets a user delete menu's relates to him.
+
+    Models:
+        - MenuList
+    """
 
     login_url = settings.LOGIN_URL
     model = MenuList
@@ -104,6 +90,14 @@ class MenuDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class MenuDetailView(LoginRequiredMixin, DetailView):
+    """This view lets you view the detail of a menu related to the user. And dishes related to the menu.
+
+    Added dishes to the context so a user can see whats in the menu.
+
+    Models:
+        - MenuList
+        - DishMenu
+    """
 
     login_url = settings.LOGIN_URL
     model = MenuList
@@ -121,6 +115,10 @@ class MenuDetailView(LoginRequiredMixin, DetailView):
 
 
 class AddToMenuView(LoginRequiredMixin, View):
+    """This view makes it possible to add a dish to a menu.
+    We are getting the dish id and the menu id, so we can make the DishMenu object wich makes the relation between Dish and Menu.
+    """
+
     def post(self, request, *args, **kwargs):
         dish_id = request.POST.get("dish_id")
         menu_id = request.POST.get("menu_id")
@@ -133,9 +131,16 @@ class AddToMenuView(LoginRequiredMixin, View):
 
 
 class RemoveFromMenuView(LoginRequiredMixin, View):
+    """This view makes it possible to delete a dish to a menu.
+    We are getting the dish id and the menu id, so we can delete the DishMenu object wich makes the relation between Dish and Menu.
+    """
+
     def post(self, request, *args, **kwargs):
         dish_id = request.POST.get("dish_id")
         menu_id = request.POST.get("menu_id")
+
         dish = get_object_or_404(Dish, pk=dish_id)
         menu = get_object_or_404(MenuList, pk=menu_id)
+
         DishMenu.objects.filter(menu=menu, dish=dish).delete()
+        return redirect("dish_list")
