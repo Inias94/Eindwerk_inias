@@ -3,11 +3,13 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Verwijderen bevestigen</h2>
-    <p>Weet je zeker dat je het volgende gerecht wilt verwijderen: "{{ object.name }}"?</p>
+        <div class="alert alert-warning">
+        <strong>Gerecht:</strong> {{ dish.name }}
+    </div>
     <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Verwijder</button>
-        <a href="{% url 'dish_list' %}" class="btn btn-secondary">Annuleer</a>
+        <a href="{% url 'dish_detail' pk=object.pk %}" class="btn btn-secondary">Annuleer</a>
     </form>
 </div>
 {% endblock %}
