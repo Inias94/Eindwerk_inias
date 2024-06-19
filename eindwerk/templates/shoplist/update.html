@@ -3,7 +3,9 @@
 {% block content %}
     <form action="" method="post">
         {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Opslaan</button>
+        <p><strong>Product:</strong> {{ product_shoppinglist_product.product_dish.product.name }}</p>
+        {{ form.quantity.label }}
+        {{ form.quantity }}
+        <button type="submit" class="btn btn-success">Opslaan</button>
     </form>
 {% endblock %}
