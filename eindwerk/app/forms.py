@@ -212,7 +212,7 @@ class DishMenuForm(forms.ModelForm):
 class ProductShoppingListForm(forms.ModelForm):
     class Meta:
         model = ProductShoppingList
-        fields = ["product_dish", "quantity"]
+        fields = ["quantity"]
         labels = {
             "quantity": "Hoeveelheid",
             "product_name": "Product naam",
@@ -221,11 +221,6 @@ class ProductShoppingListForm(forms.ModelForm):
             "quantity": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                }
-            ),
-            "product_dish": forms.Select(
-                attrs={
-                    "class": "form-select",
                 }
             ),
         }

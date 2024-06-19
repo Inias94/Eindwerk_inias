@@ -11,12 +11,12 @@ from ..forms import ProductDishForm
 
 
 class ProductDishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView):
-    # TODO: DOCSTRING!
+    """This views makes it possible to update a product dish."""
+
     login_url = settings.LOGIN_URL
     model = ProductDish
     form_class = ProductDishForm
     template_name = "product_dish/update.html"
-    success_url = reverse_lazy('dish_list')
 
     def get_queryset(self):
         # We need to make sure that the user can only edit hos own objects.
@@ -49,9 +49,14 @@ class ProductDishUpdateView(LoginRequiredMixin, UserDishAccessMixin, UpdateView)
         form.instance.product = product
         return super().form_valid(form)
 
+    def get_success_url(self):
+        """Redirect to the detail page of the associated Dish."""
+        return reverse('dish_detail', kwargs={'pk': self.object.dish_id})
+
 
 class ProductDishDeleteView(LoginRequiredMixin, UserDishAccessMixin, DeleteView):
     """View to delete a productdish related to the user."""
+
     login_url = settings.LOGIN_URL
     model = ProductDish
     template_name = "product_dish/delete.html"

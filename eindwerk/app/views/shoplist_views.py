@@ -36,6 +36,14 @@ class ShoppingListDetailView(LoginRequiredMixin, DetailView):
 
 
 class CreateShoppingListFromMenuView(LoginRequiredMixin, View):
+    """View to create a new shopping list from a selected menu for the logged-in user.
+
+    This view handles the process of creating a shopping list based on the products
+    contained in the dishes of a specified menu. It aggregates the quantities of each
+    product across all dishes and creates corresponding ProductShoppingList entries
+    for the shopping list.
+    """
+
     login_url = settings.LOGIN_URL
 
     def get(self, request, *args, **kwargs):
@@ -47,29 +55,30 @@ class CreateShoppingListFromMenuView(LoginRequiredMixin, View):
 
         product_quantities = {}
 
-        dishes = menu.dishmenu_set.all()  # Gets all DishMenu instances related to the menu.
-        dish_ids = [dish_menu.dish_id for dish_menu in dishes]  # Extract dish IDs
+        dishes = menu.dishmenu_set.all()  # Gets all dishes related to the menu.
+        for dish_menu in dishes:
+            dish = dish_menu.dish
+            product_dishes = ProductDish.objects.filter(dish=dish)
 
-        # Get all ProductDishes related to dishes in the menu
-        product_dishes = ProductDish.objects.filter(dish_id__in=dish_ids)
+            for product_dish in product_dishes:
+                product_name = product_dish.product.name
+                quantity = product_dish.quantity or 0
+                unit = product_dish.unit
 
-        for product_dish in product_dishes:
-            product_name = product_dish.product.name
-            quantity = product_dish.quantity or 0
+                # Create a unique key based on product name and unit
+                key = (product_name, unit.id if unit else None)
 
-            # Use product_dish.unit instead of product_dish.product.unit
-            unit = product_dish.unit
+                if key in product_quantities:
+                    product_quantities[key] += Decimal(quantity)
+                else:
+                    product_quantities[key] = Decimal(quantity)
 
-            # Check if (product_name, unit) already exists in product_quantities
-            if (product_name, unit) in product_quantities:
-                product_quantities[(product_name, unit)] += Decimal(quantity)
-            else:
-                product_quantities[(product_name, unit)] = Decimal(quantity)
-
-        for (product_name, unit), total_quantity in product_quantities.items():
-            # Get ProductDish where product name and unit match, and dish is in dishes
+        for (product_name, unit_id), total_quantity in product_quantities.items():
+            # Get the corresponding ProductDish instance
             product_dish = ProductDish.objects.filter(
-                product__name=product_name, unit=unit, dish_id__in=dish_ids
+                product__name=product_name,
+                unit__id=unit_id if unit_id else None,
+                dish__in=[dm.dish for dm in dishes]
             ).first()
 
             if product_dish:
@@ -78,11 +87,9 @@ class CreateShoppingListFromMenuView(LoginRequiredMixin, View):
                     shoppinglist=shoppinglist,
                     quantity=total_quantity,
                 )
-            else:
-                # Handle the case where product_dish is not found
-                pass
 
         return redirect("shoppinglist_detail", pk=shoppinglist.pk)
+
 
 
 class UpdateItemFromShoppingListView(LoginRequiredMixin, UpdateView):
