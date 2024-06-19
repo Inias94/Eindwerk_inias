@@ -134,7 +134,7 @@ class AddToMenuView(LoginRequiredMixin, View):
         menu = get_object_or_404(MenuList, pk=menu_id)
 
         DishMenu.objects.create(menu=menu, dish=dish)
-        # UserMenu.objects.create(user=self.request.user, menu=menu)
+        UserMenu.objects.update_or_create(user=self.request.user, menu=menu)
         # MenuList.objects.update_or_create()
         return redirect("dish_list")
 

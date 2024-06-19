@@ -212,8 +212,23 @@ class DishMenuForm(forms.ModelForm):
 class ProductShoppingListForm(forms.ModelForm):
     class Meta:
         model = ProductShoppingList
-        fields = ["quantity"]
-        labels = {"quantity": "Hoeveelheid"}
+        fields = ["product_dish", "quantity"]
+        labels = {
+            "quantity": "Hoeveelheid",
+            "product_name": "Product naam",
+        }
+        widgets = {
+            "quantity": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+            "product_dish": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+        }
 
 
 class BugReportForm(forms.ModelForm):
