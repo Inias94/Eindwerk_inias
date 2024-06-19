@@ -9,7 +9,11 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h3 class="card-title">{{ dish_menu.dish.name }}</h3>
+                                <h3 class="card-title">
+                                    <a class="link-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="{% url 'dish_detail' pk=dish_menu.dish.pk %}">
+                                        {{ dish_menu.dish.name }}
+                                    </a>
+                                </h3>
                                 <form action="{% url 'remove_from_menu' %}" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="dish_id" value="{{ dish_menu.dish.pk }}">
@@ -18,7 +22,6 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
-
                             </div>
                             <p class="card-text text-truncate">{{ dish_menu.dish.recipe }}</p>
                             <p><strong>Favoriet:</strong> {{ dish_menu.dish.is_favorite|yesno:"Yes,No" }}</p>
