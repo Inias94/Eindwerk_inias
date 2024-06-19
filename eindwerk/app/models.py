@@ -106,6 +106,10 @@ class ShoppingList(models.Model):
         local_time = timezone.localtime(self.date)  # Getting the local timezone.
         return f'{local_time.strftime("%Y-%m-%d %H:%M")} by: {self.user}'
 
+    class Meta:
+        """Most recent 1st."""
+        ordering = ["-date"]
+
 
 class ProductShoppingList(models.Model):
     """This model represents the relation of a product with/in a shopping list.
