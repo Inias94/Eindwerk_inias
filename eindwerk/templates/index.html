@@ -73,7 +73,19 @@
                             <h5>Stap 3. Gerechten aan Menu toevoegen</h5>
                             <p>
                                 Ga naar mijn gerechten, hier kan je u gerechten toevoegen aan je menu door op de groene
-                                knop te drukken in de titelbalk van het gerecht.
+                                knop te drukken in de titelbalk van het gerecht. Er komt een pop-up. Hier kies je aan
+                                welk menu je het gerecht wil toevoegen.
+                            </p>
+                            <div class="text-center mb-3">
+                                <a href="{% url 'dish_list' %}">
+                                    <button class="btn btn-warning btn-sm">Gerechten</button>
+                                </a>
+                            </div>
+                            <h5>Stap 4. Menu</h5>
+                            <p>
+                                Je kan meerdere gerechten toevoegen aan menu. Klik hier op <a
+                                    href="{% url 'menu_list' %} ">Menu's</a> en en selecteer je menu. Je kan nu je menu
+                                toevoegen aan je winkellijst!
                             </p>
                             <div class="text-center mb-3">
                                 <a href="{% url 'dish_list' %}">
