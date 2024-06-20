@@ -27,7 +27,7 @@ class MenuListView(LoginRequiredMixin, ListView):
         return MenuList.objects.filter(usermenu__user=self.request.user)
 
 
-class MenuCreateView(CreateView):
+class MenuCreateView(LoginRequiredMixin, CreateView):
     """This view lets you create a new menu. Dishes can be added to this Menu model in an other View.
 
     Models:
