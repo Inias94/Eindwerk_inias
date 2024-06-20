@@ -10,15 +10,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(__name__)
 
 # Load  envirement variables
-try:
-    ENV_FILE = find_dotenv()
-    if ENV_FILE:
-        load_dotenv(ENV_FILE)
-    else:
-        raise FileNotFoundError("No .env file found or file not properly configured!")
-except:
-    logger.error(FileNotFoundError)
-    raise
+# try:
+#     ENV_FILE = find_dotenv()
+#     if ENV_FILE:
+#         load_dotenv(ENV_FILE)
+#     else:
+#         raise FileNotFoundError("No .env file found or file not properly configured!")
+# except:
+#     logger.error(FileNotFoundError)
+#     raise
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
