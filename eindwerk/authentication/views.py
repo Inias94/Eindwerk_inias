@@ -17,7 +17,7 @@ def logout(request):
     domain = settings.SOCIAL_AUTH_AUTH0_DOMAIN
     client_id = settings.SOCIAL_AUTH_AUTH0_KEY
     # Set the return URL to the current domain
-    return_to = "http://127.0.0.1:8000"  # this can be current domain
+    return_to = settings.LOGOUT_REDIRECT_URL  # this can be current domain
     # Redirect the user to the Auth0 logout page with the client ID and return URL
     return redirect(
         f"https://{domain}/v2/logout?client_id={client_id}&returnTo={return_to}"
