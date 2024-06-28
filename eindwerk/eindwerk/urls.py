@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls.static import static
+
 
 urlpatterns = [
     # Admin panel
@@ -10,7 +10,5 @@ urlpatterns = [
     path('', include('authentication.urls')),
     path('', include('app.urls')),
     # auth0
-    path('', include('social_django.urls')),
-    path(setting)
-
+    path('', include('social_django.urls'))
 ]
