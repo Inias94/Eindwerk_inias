@@ -10,23 +10,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(__name__)
 
 # Load  envirement variables
-try:
-    ENV_FILE = find_dotenv()
-    if ENV_FILE:
-        load_dotenv(ENV_FILE)
-    else:
-        raise FileNotFoundError("No .env file found or file not properly configured!")
-except:
-    logger.error(FileNotFoundError)
-    raise
+# try:
+#     ENV_FILE = find_dotenv()
+#     if ENV_FILE:
+#         load_dotenv(ENV_FILE)
+#     else:
+#         raise FileNotFoundError("No .env file found or file not properly configured!")
+# except:
+#     logger.error(FileNotFoundError)
+#     raise
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -78,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "eindwerk.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -94,7 +94,7 @@ DATABASES = {
 }
 
 
-DATABASES['default'] = dj_database_url.parse(os.environ.get("DATABASE_DEFAULT"))
+DATABASES["default"] = dj_database_url.parse(os.environ.get("DATABASE_DEFAULT"))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -126,12 +126,18 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+STATIC_ROOT = "staticfiles"
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static/"),
+# ]
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Default primary key field type

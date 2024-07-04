@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     # Admin panel
     path('admin/', admin.site.urls),
@@ -10,5 +11,4 @@ urlpatterns = [
     path('', include('app.urls')),
     # auth0
     path('', include('social_django.urls'))
-
 ]
