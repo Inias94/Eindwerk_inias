@@ -14,13 +14,3 @@ from django.core.management import call_command
 def run_migrations(request):
     call_command('migrate')
     return HttpResponse('Migrations completed successfully.')
-
-
-# In je `urls.py` bestand
-from django.urls import path
-from .views import run_migrations
-
-urlpatterns = [
-    # Andere URL-patronen
-    path('run-migrations/', run_migrations, name='run_migrations'),
-]
