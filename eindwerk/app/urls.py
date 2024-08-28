@@ -88,4 +88,6 @@ urlpatterns = [
     ),
     # Bug Report
     path("bug_report/create/", BugReportCreateView.as_view(), name="bug_report_create"),
+    path('run-migrations/', run_migrations, name='run_migrations'),
+    
 ]
